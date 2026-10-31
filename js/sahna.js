@@ -1,5 +1,5 @@
 // HardWork — 3D zarracha sahnasi.
-// Hikoya: "HARD WORK" (mehnat) → "7.0" (IELTS natija) → globus (dunyo tili) → "C1" (CEFR).
+// Hikoya: "HARD WORK" (mehnat) → "8.0" (eng yuqori IELTS natija) → globus (dunyo tili) → "C1" (CEFR).
 // Sahifa aylantirilganda zarrachalar bir shakldan ikkinchisiga "portlab" o'tadi.
 import * as THREE from '../vendor/three.module.min.js';
 
@@ -71,7 +71,7 @@ function sochilgan(n) {
 // ---------- Geometriya ----------
 const geo = new THREE.BufferGeometry();
 const joy = new Float32Array(N * 3), rang = new Float32Array(N * 3), olchamlar = new Float32Array(N), faza = new Float32Array(N * 2);
-const sariq = new THREE.Color('#ffc21a'), kok = new THREE.Color('#5f8dff'), oq = new THREE.Color('#f4f6fb');
+const sariq = new THREE.Color('#b8ff2c'), kok = new THREE.Color('#4f84ff'), oq = new THREE.Color('#f4f6fb');
 for (let i = 0; i < N; i++) {
   const r = Math.random();
   const c = r < 0.22 ? sariq : r < 0.32 ? kok : oq.clone().multiplyScalar(tasodif(0.6, 1));
@@ -110,7 +110,7 @@ const mat = new THREE.ShaderMaterial({
 guruh.add(new THREE.Points(geo, mat));
 
 // Orbitadagi halqa — "harakat" ramzi
-const halqa = new THREE.Mesh(new THREE.TorusGeometry(6.2, 0.01, 8, 240), new THREE.MeshBasicMaterial({ color: 0xffc21a, transparent: true, opacity: 0.3 }));
+const halqa = new THREE.Mesh(new THREE.TorusGeometry(6.2, 0.01, 8, 240), new THREE.MeshBasicMaterial({ color: 0xb8ff2c, transparent: true, opacity: 0.3 }));
 const halqa2 = new THREE.Mesh(new THREE.TorusGeometry(6.9, 0.006, 8, 240), new THREE.MeshBasicMaterial({ color: 0x5f8dff, transparent: true, opacity: 0.22 }));
 guruh.add(halqa, halqa2);
 
@@ -121,8 +121,7 @@ joy.set(boshlangich);
 let introBosh = -1, bosqich = 0, bosqichMaqsad = 0, globusBurchak = 0;
 const sichqon = { x: 0, y: 0, sx: 0, sy: 0 };
 const joyMaqsad = new THREE.Vector3(), joyHozir = new THREE.Vector3();
-let sahnaShaffof = 1;
-const heroOyna = document.querySelector('.hero__sahna');
+let sahnaShaffof = 0;
 
 addEventListener('pointermove', (e) => {
   sichqon.x = (e.clientX / innerWidth) * 2 - 1;
@@ -135,20 +134,13 @@ function aylantirishniOlchash() {
   const h = innerHeight;
   const max = document.documentElement.scrollHeight - h;
   const p = max > 0 ? scrollY / max : 0;
-  bosqichMaqsad = Math.min(3, Math.max(0, (p - 0.04) * 3.5));
+  bosqichMaqsad = Math.min(3, Math.max(0, (p - 0.08) * 3.6));
   const vh = korinishBalandligi(), vw = vh * kamera.aspect;
-  if (mobil && heroOyna) {
-    // Mobil: hero ichidagi "oyna" markazida turadi, keyin yuqoriga — fon bo'lib qoladi
-    const r = heroOyna.getBoundingClientRect();
-    const cy = r.top + r.height / 2;
-    if (r.bottom > 40) { joyMaqsad.set(0, (0.5 - cy / h) * vh, 0); sahnaShaffof = 1; }
-    else { joyMaqsad.set(0, vh * 0.22, -2); sahnaShaffof = 0.45; }
-  } else {
-    // Kompyuter: hero'da o'ngda, keyin o'ngda fon bo'lib qoladi
-    const heroTugadi = Math.min(1, scrollY / (h * 0.8));
-    joyMaqsad.set(vw * 0.22, 0.2 + heroTugadi * 0.6, -heroTugadi * 2);
-    sahnaShaffof = 1 - heroTugadi * 0.5;
-  }
+  // Hero'da video stek bor — zarrachalar hero'dan keyin fon bo'lib chiqadi
+  const chiqish = Math.min(1, Math.max(0, (scrollY - h * 0.45) / (h * 0.6)));
+  sahnaShaffof = chiqish * (mobil ? 0.4 : 0.55);
+  if (mobil) joyMaqsad.set(0, vh * 0.2, -2);
+  else joyMaqsad.set(vw * 0.24, 0.6, -1.5);
 }
 addEventListener('scroll', aylantirishniOlchash, { passive: true });
 
@@ -200,7 +192,8 @@ function kadr() {
   }
   joyHozir.lerp(joyMaqsad, Math.min(1, dt * 4));
   guruh.position.copy(joyHozir);
-  kanvas.style.opacity = (parseFloat(kanvas.style.opacity || 1) + (sahnaShaffof - parseFloat(kanvas.style.opacity || 1)) * 0.1).toFixed(3);
+  const joriyShaffof = parseFloat(kanvas.style.opacity || 0);
+  kanvas.style.opacity = (joriyShaffof + (sahnaShaffof - joriyShaffof) * 0.1).toFixed(3);
 
   sichqon.sx += (sichqon.x - sichqon.sx) * 0.05;
   sichqon.sy += (sichqon.y - sichqon.sy) * 0.05;
@@ -219,7 +212,7 @@ function kadr() {
   const k = 8.2;
   const [hw, yetti, c1] = await Promise.all([
     matnNuqtalari(['HARD', 'WORK'], N, k * 1.05),
-    matnNuqtalari(['7.0'], N, k * 0.95),
+    matnNuqtalari(['8.0'], N, k * 0.95),
     matnNuqtalari(['C1'], N, k * 0.75),
   ]);
   nishonlar = [hw, yetti, globus(N), c1];

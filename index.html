@@ -3,92 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>HardWork ELC — IELTS, CEFR va General English | Chilonzor · Beruniy</title>
-  <meta name="description" content="HardWork English Learning Centre — Toshkentda IELTS, CEFR va General English. Chilonzor (Integro, 7–8-qavat) va Beruniy (Belissimo) filiallari. 3 ta bepul sinov darsi.">
-  <meta name="theme-color" content="#070b18">
+  <title>HardWork ELC — Ingliz tili haftada 7 kun | IELTS, CEFR, General English · Chilonzor · Beruniy · Chorsu</title>
+  <meta name="description" content="HardWork English Learning Centre: ingliz tili haftada 7 kun, IELTS 7.0–8.0 natijalar. Chilonzor, Beruniy va Chorsu filiallari. 3 marta bepul sinov darslari.">
+  <meta name="theme-color" content="#0b0820">
+  <link rel="icon" href="media/logo-96.png">
+  <link rel="apple-touch-icon" href="media/apple-touch-icon.png">
+  <meta property="og:image" content="media/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;800&family=Anton&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/v2.css">
 </head>
 <body>
-  <!-- Fon: aurora + 3D zarrachalar -->
   <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="setka" aria-hidden="true"></div>
   <canvas id="sahna" aria-hidden="true"></canvas>
   <div class="kursor" id="kursor" aria-hidden="true"></div>
   <div class="kursor-halqa" id="kursorHalqa" aria-hidden="true"></div>
 
-  <div class="yuklash" id="yuklash"><div class="yuklash__matn"><span>HARD</span><span>WORK</span></div><div class="yuklash__chiziq"><i></i></div></div>
+  <div class="yuklash" id="yuklash">
+    <img src="media/logo.png" alt="" class="yuklash__logo" width="120" height="120">
+    <div class="yuklash__matn"><span>HARD</span><span>WORK</span></div>
+    <div class="yuklash__chiziq"><i></i></div>
+  </div>
 
   <header class="nav" id="nav">
-    <a href="#bosh" class="logo"><span class="logo__belgi">HW</span><span>HardWork<small>English Learning Centre</small></span></a>
+    <a href="#bosh" class="logo"><img src="media/logo-96.png" alt="HardWork logotipi" width="44" height="44"><span>HardWork<small>English Learning Centre</small></span></a>
     <nav class="nav__havola">
       <a href="#natijalar">Natijalar</a>
-      <a href="#kurslar">Kurslar</a>
+      <a href="#kurslar">Narxlar</a>
       <a href="#ustozlar">Ustozlar</a>
       <a href="#test">Daraja testi</a>
       <a href="#filiallar">Filiallar</a>
     </nav>
-    <a href="#yozilish" class="tugma tugma--kichik">Bepul sinov darsi</a>
+    <a href="#yozilish" class="tugma tugma--kichik">3 ta bepul dars</a>
     <button class="burger" id="burger" aria-label="Menyu"><span></span><span></span></button>
   </header>
 
   <main>
     <!-- HERO -->
     <section class="hero" id="bosh">
-      <div class="hero__sahna" aria-hidden="true"></div>
       <div class="hero__ichi">
-        <p class="belgi"><span class="jonli"></span>Yangi guruhlar · 3 ta sinov darsi bepul</p>
+        <p class="belgi"><span class="jonli"></span>Barcha filiallarda qabul ochiq</p>
         <h1 class="hero__sarlavha">
-          <span class="qator">Natija —</span>
-          <span class="qator"><em>mehnatdan.</em></span>
+          <span class="qator">Ingliz tili</span>
+          <span class="qator"><em>haftada 7 kun.</em></span>
         </h1>
-        <p class="hero__matn">IELTS, CEFR va General English — “nol”dan boshlab yuqori bandgacha. Har kunlik dars, nazorat va to'g'ri feedback.</p>
+        <p class="hero__matn">Har kuni ~2 soatlik dars, nazorat va to'g'ri feedback. Natija — IELTS 7.0, 7.5, 8.0. Birinchi 3 ta dars — bepul.</p>
         <div class="hero__tugmalar">
           <a href="#yozilish" class="tugma">Bepul sinov darsiga yozilish →</a>
-          <a href="#natijalar" class="tugma tugma--chiziq">Natijalarni ko'rish</a>
+          <a href="#natijalar" class="tugma tugma--chiziq"><span class="play">▶</span> Natijalarni ko'rish</a>
         </div>
         <ul class="hero__fakt">
-          <li><b>7.0</b><span>IELTS overall natijalar</span></li>
-          <li><b>C1</b><span>CEFR natijalar</span></li>
-          <li><b>2</b><span>filial: Chilonzor · Beruniy</span></li>
+          <li><b>7</b><span>kun haftada dars</span></li>
+          <li><b>8.0</b><span>eng yuqori IELTS</span></li>
+          <li><b>3</b><span>filial: Chilonzor · Beruniy · Chorsu</span></li>
+          <li><b>26.8K</b><span>Instagram'da kuzatadi</span></li>
         </ul>
       </div>
-      <!-- Shisha yorliqlar (kompyuterda sichqonchaga qarab parallaks) -->
-      <div class="chip chip--1" data-chuqurlik="30"><span class="chip__belgi">🎧</span><div><b>Listening 8.0</b><small>Sevinch · 6.0 → 7.0</small></div></div>
-      <div class="chip chip--2" data-chuqurlik="55"><span class="chip__belgi">★</span><div><b>IELTS 7.0</b><small>Dilnura · 3 oyda</small></div></div>
-      <div class="chip chip--3" data-chuqurlik="20"><span class="chip__belgi chip__belgi--tg">✈</span><div><b>2 000+</b><small>Telegram obunachilari</small></div></div>
+
+      <!-- 3D reels stack: haqiqiy natija videolari -->
+      <div class="stek" id="stek" aria-label="O'quvchilar natijalari videolari">
+        <button class="stek__karta" data-video="DOD6uQsjCZD" data-ism="Hadicha" data-ball="8.0"><video muted playsinline loop preload="none" poster="media/natija/DOD6uQsjCZD.jpg" data-src="media/natija/DOD6uQsjCZD_q.mp4"></video><span class="stek__yorliq"><b>8.0</b>Hadicha · IELTS</span></button>
+        <button class="stek__karta" data-video="DJEjGJhitzo" data-ism="E'zoza" data-ball="7.5"><video muted playsinline loop preload="none" poster="media/natija/DJEjGJhitzo.jpg" data-src="media/natija/DJEjGJhitzo_q.mp4"></video><span class="stek__yorliq"><b>7.5</b>E'zoza · 2011-yilda tug'ilgan</span></button>
+        <button class="stek__karta" data-video="DTVKir_DHi-" data-ism="Kimyoxon" data-ball="7.5"><video muted playsinline loop preload="none" poster="media/natija/DTVKir_DHi-.jpg" data-src="media/natija/DTVKir_DHi-_q.mp4"></video><span class="stek__yorliq"><b>7.5</b>Kimyoxon · IELTS</span></button>
+        <div class="stek__boshqaruv"><span class="stek__nuqtalar" id="stekNuqtalar"></span><small>Bosing — ovoz bilan ko'ring</small></div>
+      </div>
       <div class="pastga" aria-hidden="true"><span></span></div>
     </section>
 
-    <!-- NATIJALAR LENTASI -->
-    <div class="lenta" aria-label="O'quvchilar natijalari">
+    <!-- LENTA -->
+    <div class="lenta" aria-label="Natijalar">
       <div class="lenta__ichi">
-        <span>Dilnura — IELTS 7.0</span><i>✦</i><span>Mohlaroy — IELTS 7.0</span><i>✦</i><span>Sevinch — 6.0 → 7.0</span><i>✦</i><span>Shirinkhon — IELTS 7.0</span><i>✦</i><span>CEFR — C1</span><i>✦</i><span>Reading 75/72</span><i>✦</i>
+        <span>Hadicha — 8.0</span><i>✦</i><span>E'zoza — 7.5</span><i>✦</i><span>Ra'noxon — 7.5</span><i>✦</i><span>Kimyoxon — 7.5</span><i>✦</i><span>14 yoshda — 7.5</span><i>✦</i><span>Dilafruz — 7.0</span><i>✦</i><span>Dilnura — 7.0</span><i>✦</i><span>Sevinch — 6.0 → 7.0</span><i>✦</i><span>CEFR — C1</span><i>✦</i>
       </div>
     </div>
 
     <!-- NATIJALAR -->
     <section class="bolim" id="natijalar">
-      <div class="bolim__bosh">
-        <span class="bolim__teg">01 — Natijalar</span>
-        <h2>Gap emas — <em>ballar</em> gapiradi.</h2>
-        <p>O'quvchilarimizning rasmiy natijalari. Har bir band — har kunlik mehnat.</p>
+      <div class="bolim__bosh bolim__bosh--qator">
+        <div>
+          <span class="bolim__teg">01 — Natijalar</span>
+          <h2>Gap emas — <em>ballar</em> gapiradi.</h2>
+          <p>Har bir video — haqiqiy o'quvchi va uning rasmiy sertifikati. Ovoz bilan ko'rish uchun bosing.</p>
+        </div>
+        <a class="tugma tugma--chiziq" href="https://www.instagram.com/hardwork_elc/" target="_blank" rel="noopener">Instagram'da yana ko'p ↗</a>
       </div>
+
+      <div class="reels" id="reels">
+        <button class="reel" data-video="DOD6uQsjCZD"><video muted playsinline loop preload="none" poster="media/natija/DOD6uQsjCZD.jpg" data-src="media/natija/DOD6uQsjCZD_q.mp4"></video><span class="reel__ball">8.0</span><span class="reel__matn"><b>Hadicha</b>IELTS overall</span><span class="reel__play">▶</span></button>
+        <button class="reel" data-video="DJEjGJhitzo"><video muted playsinline loop preload="none" poster="media/natija/DJEjGJhitzo.jpg" data-src="media/natija/DJEjGJhitzo_q.mp4"></video><span class="reel__ball">7.5</span><span class="reel__matn"><b>E'zoza</b>2011-yilda tug'ilgan</span><span class="reel__play">▶</span></button>
+        <button class="reel" data-video="DI2_SooCygq"><video muted playsinline loop preload="none" poster="media/natija/DI2_SooCygq.jpg" data-src="media/natija/DI2_SooCygq_q.mp4"></video><span class="reel__ball">7.5</span><span class="reel__matn"><b>Ra'noxon</b>15 yoshda</span><span class="reel__play">▶</span></button>
+        <button class="reel" data-video="C7V2L1NNUGY"><video muted playsinline loop preload="none" poster="media/natija/C7V2L1NNUGY.jpg" data-src="media/natija/C7V2L1NNUGY_q.mp4"></video><span class="reel__ball">7.5</span><span class="reel__matn"><b>14 yoshda</b>IELTS overall</span><span class="reel__play">▶</span></button>
+        <button class="reel" data-video="DTVKir_DHi-"><video muted playsinline loop preload="none" poster="media/natija/DTVKir_DHi-.jpg" data-src="media/natija/DTVKir_DHi-_q.mp4"></video><span class="reel__ball">7.5</span><span class="reel__matn"><b>Kimyoxon</b>IELTS overall</span><span class="reel__play">▶</span></button>
+        <button class="reel" data-video="DT0hpbqDMrV"><video muted playsinline loop preload="none" poster="media/natija/DT0hpbqDMrV.jpg" data-src="media/natija/DT0hpbqDMrV_q.mp4"></video><span class="reel__ball">7.0</span><span class="reel__matn"><b>Dilafruz</b>IELTS overall</span><span class="reel__play">▶</span></button>
+      </div>
+
       <div class="natijalar">
         <article class="ball" data-egilish>
-          <header><div class="ball__avatar">D</div><div><h3>Dilnura</h3><small>IELTS Standard · 3 oy · Otabek Akramov</small></div><b class="ball__umumiy">7.0</b></header>
+          <header><div class="ball__avatar">D</div><div><h3>Dilnura</h3><small>IELTS Standard · 3 oy · 2009-yilda tug'ilgan</small></div><b class="ball__umumiy">7.0</b></header>
           <ul class="ball__qism">
             <li><span>Listening</span><div class="ustun"><i style="--b:7.5"></i></div><b>7.5</b></li>
             <li><span>Reading</span><div class="ustun"><i style="--b:7"></i></div><b>7.0</b></li>
             <li><span>Writing</span><div class="ustun"><i style="--b:7"></i></div><b>7.0</b></li>
             <li><span>Speaking</span><div class="ustun"><i style="--b:7"></i></div><b>7.0</b></li>
           </ul>
-          <p class="ball__izoh">Hech bir bo'limi 7.0 dan past emas · 2009-yilda tug'ilgan</p>
+          <p class="ball__izoh">Hech bir bo'limi 7.0 dan past emas</p>
         </article>
         <article class="ball ball--asosiy" data-egilish>
-          <header><div class="ball__avatar">S</div><div><h3>Sevinch</h3><small>General English + IELTS Standard · Ilhomjon</small></div><b class="ball__umumiy">7.0</b></header>
+          <header><div class="ball__avatar">S</div><div><h3>Sevinch</h3><small>General English + IELTS Standard</small></div><b class="ball__umumiy">7.0</b></header>
           <ul class="ball__qism">
             <li><span>Listening</span><div class="ustun"><i style="--b:8"></i></div><b>8.0</b></li>
             <li><span>Reading</span><div class="ustun"><i style="--b:6.5"></i></div><b>6.5</b></li>
@@ -97,45 +121,87 @@
           </ul>
           <p class="ball__izoh"><span class="osish">6.0 → 7.0</span> overall ball oshdi</p>
         </article>
-        <div class="natijalar__kichik">
-          <article class="mini" data-egilish><b>7.0</b><div><h3>Mohlaroy</h3><small>General English + IELTS Standard · Beruniy filiali</small></div></article>
-          <article class="mini" data-egilish><b>7.0</b><div><h3>Shirinkhon</h3><small>IELTS Intensive · Otabek va Ilhomjon</small></div></article>
-          <article class="mini mini--cefr" data-egilish><b>C1</b><div><h3>CEFR</h3><small>Reading va Listening'ga alohida e'tibor</small></div></article>
+        <div class="devor" aria-label="Boshqa natijalar">
+          <h3>Natijalar devori</h3>
+          <ul>
+            <li><b>7.5</b>17 yoshda</li>
+            <li><b>7.5</b>11-sinf o'quvchisi</li>
+            <li><b>7.5</b>Stage 1 dan — 10-sinf</li>
+            <li><b>7.5 · 7.0</b>Birinchi urinishda, Intensive</li>
+            <li><b>7.0</b>Mohlaroy</li>
+            <li><b>7.0</b>Shirinkhon</li>
+            <li><b>7.0</b>Xurshidabonu</li>
+            <li><b class="kok">C1</b>CEFR Multi-level</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- KURSLAR -->
-    <section class="bolim" id="kurslar">
-      <div class="bolim__bosh">
-        <span class="bolim__teg">02 — Kurslar</span>
-        <h2>Noldan — <em>7.0+</em> gacha.</h2>
-        <p>Daraja aniqlanadi, keyin mos guruh. Birinchi 3 ta dars — bepul.</p>
-      </div>
-      <div class="kurslar">
-        <article class="kurs" data-egilish><span class="kurs__raqam">01</span><h3>Beginner</h3><p>Ingliz tilini “nol”dan boshlang — alifbodan jonli muloqotgacha.</p><span class="kurs__teg">Boshlang'ich</span></article>
-        <article class="kurs" data-egilish><span class="kurs__raqam">02</span><h3>General English</h3><p>Grammatika, lug'at, gapirish va tinglash — IELTS uchun mustahkam poydevor.</p><span class="kurs__teg">A2 → B2</span></article>
-        <article class="kurs kurs--asosiy" data-egilish><span class="kurs__raqam">03</span><h3>IELTS Standard</h3><p>To'liq imtihon tayyorlovi: to'rt bo'lim, mock testlar va shaxsiy feedback.</p><span class="kurs__teg">Band 6.0 – 7.0+</span></article>
-        <article class="kurs" data-egilish><span class="kurs__raqam">04</span><h3>IELTS Intensive</h3><p>Imtihon sanasi yaqin bo'lganlar uchun — har kunlik dars va qattiq nazorat.</p><span class="kurs__teg">Tezkor natija</span></article>
-        <article class="kurs" data-egilish><span class="kurs__raqam">05</span><h3>CEFR</h3><p>Milliy sertifikat: Reading va Listening'ga alohida urg'u.</p><span class="kurs__teg">B2 · C1</span></article>
+    <!-- AFZALLIKLAR -->
+    <section class="bolim" id="nega">
+      <div class="nega">
+        <div class="nega__katta">
+          <span class="bolim__teg">02 — Nega HardWork</span>
+          <h2>Haftada <em>7 kun</em> — shuning uchun natija tez.</h2>
+          <p class="bolim__p">Boshqa markazlarda haftasiga 3 dars. Bizda — har kuni. Til odatga aylanadi.</p>
+        </div>
+        <div class="nega__karta" data-egilish><b>7/7</b><h3>Har kunlik darslar</h3><p>Haftasiga 7 marta, o'rtacha 2 soatdan.</p></div>
+        <div class="nega__karta" data-egilish><b>3×</b><h3>Bepul sinov darslari</h3><p>To'lovdan oldin 3 ta darsda o'zingiz ko'rasiz.</p></div>
+        <div class="nega__karta" data-egilish><b>☕</b><h3>Co-working zona</h3><p>Darsdan keyin mustaqil shug'ullanish uchun joy.</p></div>
+        <div class="nega__karta" data-egilish><b>20:00</b><h3>Kechki guruhlar</h3><p>20:00–22:00 — ish yoki o'qishdan keyin.</p></div>
+        <div class="nega__karta" data-egilish><b>🗣</b><h3>Native speaker bilan</h3><p>Dam olish kunlari speaking mashg'ulotlari.</p></div>
       </div>
     </section>
 
-    <!-- JADVAL -->
+    <!-- NARXLAR -->
+    <section class="bolim" id="kurslar">
+      <div class="bolim__bosh">
+        <span class="bolim__teg">03 — Kurslar va narxlar</span>
+        <h2>Hamyonbop narx. <em>Har kuni</em> dars.</h2>
+        <p>Oylik to'lov. Barcha filiallarda, barcha darajalar uchun qabul ochiq.</p>
+      </div>
+      <div class="narxlar">
+        <article class="narx" data-egilish>
+          <span class="narx__teg">Noldan → B2</span>
+          <h3>General English</h3>
+          <p class="narx__summa"><b>650 000</b> so'm/oy</p>
+          <ul><li>Beginner guruhlari — “nol”dan</li><li>Grammatika, lug'at, speaking</li><li>IELTS uchun poydevor</li></ul>
+          <a href="#yozilish" class="tugma tugma--chiziq" data-kurs="General English">Tanlash</a>
+        </article>
+        <article class="narx narx--asosiy" data-egilish>
+          <span class="narx__belgi">Eng ko'p natija</span>
+          <span class="narx__teg">Band 6.5 – 8.0</span>
+          <h3>IELTS</h3>
+          <p class="narx__summa"><b>750 000</b> so'm/oy</p>
+          <ul><li>Standard va Intensive guruhlar</li><li>Mock testlar, Writing tahlili</li><li>IELTS 8.0–8.5 li ustozlar</li></ul>
+          <a href="#yozilish" class="tugma" data-kurs="IELTS">Tanlash →</a>
+        </article>
+        <article class="narx" data-egilish>
+          <span class="narx__teg">B2 · C1</span>
+          <h3>CEFR</h3>
+          <p class="narx__summa"><b>670 000</b> so'm/oy</p>
+          <ul><li>Multi-level imtihoniga tayyorlov</li><li>Reading va Listening'ga urg'u</li><li>C1 natijalar</li></ul>
+          <a href="#yozilish" class="tugma tugma--chiziq" data-kurs="CEFR">Tanlash</a>
+        </article>
+      </div>
+      <p class="narxlar__izoh">✦ Darslar haftada 7 kun · ✦ 3 marta bepul sinov darsi · ✦ Narxlar Instagram e'loniga ko'ra</p>
+    </section>
+
+    <!-- VAQT -->
     <section class="bolim" id="jadval">
       <div class="jadval">
         <div>
-          <span class="bolim__teg">03 — Vaqt</span>
-          <h2>O'zingizga qulay <em>vaqt</em>ni tanlang.</h2>
-          <p class="bolim__p">Ertalabdan kechgacha guruhlar bor — maktab, o'qish yoki ishga xalaqit bermaydi.</p>
+          <span class="bolim__teg">04 — Vaqt</span>
+          <h2>O'zingizga qulay <em>vaqt</em>.</h2>
+          <p class="bolim__p">Ertalabdan kechgacha guruhlar bor. Vaqtni tanlang — u formaga qo'shiladi.</p>
         </div>
         <div class="vaqtlar" id="vaqtlar" role="radiogroup" aria-label="Dars vaqti">
           <button type="button" class="vaqt" data-vaqt="09:30"><b>09:30</b><small>Ertalab</small></button>
           <button type="button" class="vaqt" data-vaqt="14:00"><b>14:00</b><small>Kunduzi</small></button>
           <button type="button" class="vaqt" data-vaqt="16:00"><b>16:00</b><small>Maktabdan keyin</small></button>
           <button type="button" class="vaqt" data-vaqt="18:00"><b>18:00</b><small>Ishdan keyin</small></button>
-          <button type="button" class="vaqt" data-vaqt="20:00"><b>20:00</b><small>Kechki</small></button>
-          <p class="vaqtlar__izoh" id="vaqtIzoh">Vaqtni bosing — u yozilish formasiga qo'shiladi.</p>
+          <button type="button" class="vaqt" data-vaqt="20:00"><b>20:00</b><small>Kechki · 22:00 gacha</small></button>
+          <p class="vaqtlar__izoh" id="vaqtIzoh">Vaqtlar filialga qarab farq qilishi mumkin — administrator aniqlashtiradi.</p>
         </div>
       </div>
     </section>
@@ -143,35 +209,39 @@
     <!-- USTOZLAR -->
     <section class="bolim" id="ustozlar">
       <div class="bolim__bosh">
-        <span class="bolim__teg">04 — Ustozlar</span>
-        <h2>Natija beradigan <em>ustozlar</em>.</h2>
+        <span class="bolim__teg">05 — Ustozlar</span>
+        <h2>8.0 – 8.5 li <em>ustozlar</em>.</h2>
       </div>
       <div class="ustozlar">
         <article class="ustoz" data-egilish>
-          <div class="ustoz__rasm"><span>OA</span></div>
-          <h3>Otabek Akramov</h3>
-          <p>IELTS Standard va Intensive. Dilnura (7.0) va Shirinkhon (7.0) ustozi.</p>
+          <div class="ustoz__rasm"><span>JK</span><b class="ustoz__ball">8.0</b></div>
+          <h3>Jasurbek Karimov</h3><p class="ustoz__rol">HardWork asoschisi</p>
+          <p>IELTS Intensive guruhlari. “Haftada 7 kun” yondashuvi bilan markazni boshlagan.</p>
+        </article>
+        <article class="ustoz" data-egilish>
+          <div class="ustoz__rasm"><span>TA</span><b class="ustoz__ball">8.5</b></div>
+          <h3>Temurbek Akbaraliyev</h3><p class="ustoz__rol">IELTS · 8 yillik tajriba</p>
+          <p>IELTS va Pre-IELTS guruhlari. 7.0 – 8.5 natijali yuzlab o'quvchilar.</p>
+        </article>
+        <article class="ustoz" data-egilish>
+          <div class="ustoz__rasm"><span>OA</span><b class="ustoz__ball">8.5</b></div>
+          <h3>Otabek Akramov</h3><p class="ustoz__rol">IELTS Standard · Intensive</p>
+          <p>Dilnura (7.0) va Shirinkhon (7.0) ustozi.</p>
           <a href="https://t.me/otabekakramovs" target="_blank" rel="noopener" class="ustoz__tg">Telegram ↗</a>
         </article>
         <article class="ustoz" data-egilish>
           <div class="ustoz__rasm"><span>IN</span></div>
-          <h3>Ilhomjon Ne'matullayev</h3>
-          <p>General English va IELTS Standard. Sevinchning balini 6.0 dan 7.0 ga olib chiqdi.</p>
+          <h3>Ilhomjon Ne'matullayev</h3><p class="ustoz__rol">General English · IELTS</p>
+          <p>Sevinchning balini 6.0 dan 7.0 ga olib chiqdi.</p>
           <a href="https://t.me/nematullive_me" target="_blank" rel="noopener" class="ustoz__tg">Telegram ↗</a>
-        </article>
-        <article class="ustoz ustoz--taklif" data-egilish>
-          <div class="ustoz__rasm"><span>+</span></div>
-          <h3>Sizning ustozingiz</h3>
-          <p>Bepul sinov darsida o'qituvchi bilan tanishasiz va darajangizni bilib olasiz.</p>
-          <a href="#yozilish" class="ustoz__tg">Yozilish →</a>
         </article>
       </div>
     </section>
 
-    <!-- DARAJA TESTI -->
+    <!-- TEST -->
     <section class="bolim" id="test">
       <div class="bolim__bosh">
-        <span class="bolim__teg">05 — Test</span>
+        <span class="bolim__teg">06 — Test</span>
         <h2>Darajangiz qancha? <em>2 daqiqa</em>.</h2>
         <p>8 ta savol. Natijaga qarab kurs tavsiya qilamiz.</p>
       </div>
@@ -184,17 +254,15 @@
     <!-- FILIALLAR -->
     <section class="bolim" id="filiallar">
       <div class="bolim__bosh">
-        <span class="bolim__teg">06 — Filiallar</span>
-        <h2>Metro yonida — <em>ikki</em> filial.</h2>
+        <span class="bolim__teg">07 — Filiallar</span>
+        <h2>Metro yonida — <em>uchta</em> filial.</h2>
+        <p>Har bir filialning o'z administratori, Telegram va Instagram sahifasi bor.</p>
       </div>
       <div class="filiallar">
         <div class="filial__tablar" role="tablist">
-          <button class="filial__tab faol" role="tab" data-filial="chilonzor">
-            <b>Chilonzor</b><small>Integro binosi · 7–8-qavat</small>
-          </button>
-          <button class="filial__tab" role="tab" data-filial="beruniy">
-            <b>Beruniy</b><small>“Belissimo” · 2-qavat</small>
-          </button>
+          <button class="filial__tab faol" role="tab" data-filial="chilonzor"><span class="filial__m">M</span><span><b>Chilonzor</b><small>Integro binosi · 7–8-qavat</small></span></button>
+          <button class="filial__tab" role="tab" data-filial="beruniy"><span class="filial__m">M</span><span><b>Beruniy</b><small>“Belissimo” · 2-qavat</small></span></button>
+          <button class="filial__tab" role="tab" data-filial="chorsu"><span class="filial__m">M</span><span><b>Chorsu</b><small>“Turkuaz” ro'parasi · 3-qavat</small></span></button>
         </div>
         <div class="filial__malumot" id="filialMalumot"></div>
         <div class="filial__xarita"><iframe id="filialXarita" title="Filial xaritada" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
@@ -205,23 +273,20 @@
     <section class="bolim" id="yozilish">
       <div class="yozilish">
         <div class="yozilish__chap">
-          <span class="bolim__teg">07 — Boshlash</span>
+          <span class="bolim__teg">08 — Boshlash</span>
           <h2>3 ta sinov darsi — <em>bepul</em>.</h2>
-          <p>Ma'lumot qoldiring — administrator qo'ng'iroq qiladi va darajangizga mos guruhga yozib qo'yadi.</p>
-          <div class="yozilish__tg">
-            <a href="https://t.me/hardwork_integro" target="_blank" rel="noopener">✈ @hardwork_integro <small>Chilonzor</small></a>
-            <a href="https://t.me/hardwork_beruniy" target="_blank" rel="noopener">✈ @hardwork_beruniy <small>Beruniy</small></a>
-          </div>
+          <p>Ma'lumot qoldiring — tanlagan filialingiz administratori qo'ng'iroq qilib, mos guruhga yozib qo'yadi.</p>
+          <div class="yozilish__tg" id="yozilishTg"></div>
         </div>
         <form class="forma" id="forma">
-          <label>Ismingiz<input name="ism" required autocomplete="name" placeholder="Masalan, Dilnura"></label>
+          <label>Ismingiz<input name="ism" required autocomplete="name" placeholder="Masalan, Hadicha"></label>
           <label>Telefon<input name="tel" required type="tel" autocomplete="tel" placeholder="+998 __ ___ __ __"></label>
           <div class="forma__qator">
             <label>Kurs
-              <select name="kurs" id="formaKurs"><option>Beginner</option><option selected>General English</option><option>IELTS Standard</option><option>IELTS Intensive</option><option>CEFR</option></select>
+              <select name="kurs" id="formaKurs"><option>General English</option><option>IELTS</option><option>CEFR</option><option>Beginner (noldan)</option></select>
             </label>
             <label>Filial
-              <select name="filial" id="formaFilial"><option value="Chilonzor">Chilonzor</option><option value="Beruniy">Beruniy</option></select>
+              <select name="filial" id="formaFilial"><option value="chilonzor">Chilonzor</option><option value="beruniy">Beruniy</option><option value="chorsu">Chorsu</option></select>
             </label>
           </div>
           <label>Qulay vaqt
@@ -236,17 +301,30 @@
   </main>
 
   <footer class="pastki">
-    <div class="pastki__logo">HARD<span>WORK</span></div>
-    <div class="pastki__ustun">
-      <a href="https://t.me/HardWorkELC" target="_blank" rel="noopener">Telegram kanal ↗</a>
-      <a href="tel:+998998874003">Chilonzor: +998 99 887 40 03</a>
-      <a href="tel:+998941019242">Beruniy: +998 94 101 92 42</a>
+    <div class="pastki__yuqori">
+      <a href="#bosh" class="logo"><img src="media/logo-96.png" alt="" width="56" height="56"><span>HardWork<small>English Learning Centre</small></span></a>
+      <div class="ijtimoiy">
+        <a href="https://www.instagram.com/hardwork_elc/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        <a href="https://t.me/HardWorkELC" target="_blank" rel="noopener" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/><path d="m9 13 12-9"/></svg></a>
+        <a href="https://www.youtube.com/channel/UCwM2awWByu_pxcK66UBWW6A" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/></svg></a>
+        <a href="https://www.facebook.com/HardworkLC" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></svg></a>
+      </div>
     </div>
-    <small>© 2026 HardWork English Learning Centre · Har kuni 09:00 – 22:00</small>
+    <div class="pastki__filiallar" id="pastkiFiliallar"></div>
+    <div class="pastki__logo">HARD<span>WORK</span></div>
+    <small>© 2026 HardWork English Learning Centre · Darslar haftada 7 kun</small>
   </footer>
 
+  <!-- Video oynasi -->
+  <div class="oyna" id="oyna" role="dialog" aria-modal="true" aria-label="Natija videosi" hidden>
+    <button class="oyna__yop" id="oynaYop" aria-label="Yopish">✕</button>
+    <button class="oyna__strelka oyna__strelka--chap" id="oynaOldingi" aria-label="Oldingi">‹</button>
+    <div class="oyna__ichi"><video id="oynaVideo" controls playsinline></video><div class="oyna__matn" id="oynaMatn"></div></div>
+    <button class="oyna__strelka oyna__strelka--ong" id="oynaKeyingi" aria-label="Keyingi">›</button>
+  </div>
+
   <div class="mobil-panel" id="mobilPanel">
-    <a href="tel:+998998874003" class="mobil-panel__tel" aria-label="Qo'ng'iroq qilish">☎</a>
+    <a href="tel:+998998874003" class="mobil-panel__tel" id="mobilTel" aria-label="Qo'ng'iroq qilish">☎</a>
     <a href="#yozilish" class="tugma mobil-panel__cta">3 ta bepul dars →</a>
   </div>
 
