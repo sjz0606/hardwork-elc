@@ -1,7 +1,8 @@
 // HardWork — sahifa interaktivligi
 (function () {
   // Arizalar manzili (backend yoki Telegram bot proksisi). Bo'sh bo'lsa — brauzerda saqlanadi.
-  var FORMA_MANZIL = '';
+  // Lokal sinovda Django (python manage.py runserver) ga yuboradi; serverga joylagach shu yerga API manzilini yozing.
+  var FORMA_MANZIL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8000/api/ariza/' : '';
 
   var kamHarakat = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var sichqonli = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -48,20 +49,6 @@
       '<a class="havola havola--tg" href="https://t.me/' + f.tg + '" target="_blank" rel="noopener">' + IKON.tg + '@' + f.tg + '</a>' +
       '<a class="havola havola--ig" href="https://www.instagram.com/' + f.ig + '/" target="_blank" rel="noopener">' + IKON.ig + '@' + f.ig + '</a></div>';
   }
-
-  // ---------- Yuklanish ----------
-  var yuklash = document.getElementById('yuklash'), ochildi = false;
-  function och() {
-    if (ochildi) return; ochildi = true;
-    yuklash.classList.add('tayyor');
-    if (gs) {
-      gsap.from('.hero__sarlavha .qator', { yPercent: 105, duration: 1.2, stagger: 0.1, ease: 'expo.out', delay: 0.35 });
-      gsap.from('.belgi, .hero__matn, .hero__tugmalar, .hero__fakt li', { y: 28, opacity: 0, duration: 1, stagger: 0.07, ease: 'power3.out', delay: 0.6 });
-      gsap.from('.stek', { y: 60, opacity: 0, rotateX: 18, duration: 1.4, ease: 'expo.out', delay: 0.5 });
-    }
-  }
-  addEventListener('load', function () { setTimeout(och, 900); });
-  setTimeout(och, 3500);
 
   // ---------- Lenta ----------
   var lenta = document.querySelector('.lenta__ichi');
@@ -152,18 +139,7 @@
   oyna.addEventListener('touchend', function (e) { if (tx === null) return; var d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 60) oynaSur(d < 0 ? 1 : -1); tx = null; });
   document.querySelectorAll('.reel').forEach(function (r) { r.addEventListener('click', function () { oynaOch(r.dataset.video); }); });
 
-  // ---------- Ko'rinish animatsiyalari ----------
-  if (gs && window.ScrollTrigger) {
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.utils.toArray('.bolim__bosh, .test, .yozilish, .jadval > div:first-child, .nega__katta, .filial__tablar, .filial__malumot, .filial__xarita, .narxlar__izoh').forEach(function (el) {
-      gsap.from(el, { y: 50, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%' } });
-    });
-    gsap.utils.toArray('.reels, .natijalar, .narxlar, .ustozlar, .vaqtlar').forEach(function (g) {
-      gsap.from(g.children, { y: 70, opacity: 0, rotateX: -16, duration: 1, stagger: 0.07, ease: 'power3.out', scrollTrigger: { trigger: g, start: 'top 85%' } });
-    });
-    gsap.from('.nega__karta', { y: 60, opacity: 0, duration: 0.9, stagger: 0.07, ease: 'power3.out', scrollTrigger: { trigger: '.nega', start: 'top 80%' } });
-    gsap.to('.lenta__ichi', { xPercent: -8, ease: 'none', scrollTrigger: { trigger: '.lenta', scrub: 1 } });
-  }
+  // Ko'rinish/skroll animatsiyalari — js/harakat.js
 
   // ---------- Ball ustunlari ----------
   var kuz = new IntersectionObserver(function (y) {

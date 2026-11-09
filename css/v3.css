@@ -1,0 +1,72 @@
+/* ===================== v3: professional harakat qatlami ===================== */
+
+/* Lenis silliq skroll */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+
+/* Skroll progress chizig'i */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:120;transform:scaleX(0);transform-origin:0 50%;pointer-events:none;
+  background:linear-gradient(90deg,var(--kok),var(--sariq));box-shadow:0 0 14px rgba(184,255,44,.6)}
+
+/* Navigatsiya: pastga skrollda yashirinadi, faol bo'lim chizig'i */
+.nav{transition:background .4s,padding .4s,border-color .4s,transform .55s cubic-bezier(.2,.8,.2,1)}
+.nav.yashirin{transform:translateY(-110%)}
+.nav__havola a{position:relative}
+.nav__havola a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;border-radius:2px;background:var(--sariq);transform:scaleX(0);transform-origin:right;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.nav__havola a:hover::after,.nav__havola a.faol::after{transform:scaleX(1);transform-origin:left}
+.nav__havola a.faol{opacity:1;color:var(--oq)}
+
+/* Matn bo'laklari */
+.hero__sarlavha .qator__i{display:inline-block;will-change:transform}
+.soz{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.soz__i{display:inline-block;will-change:transform}
+.harf{display:inline-block;will-change:transform}
+.bolim__teg{font-variant-numeric:tabular-nums}
+
+/* Sarlavhadagi <em> ostiga chiziq chiziladi */
+.bolim h2 em{position:relative;white-space:nowrap}
+.bolim h2 em::after{content:"";position:absolute;left:0;right:0;bottom:.02em;height:.09em;border-radius:.1em;background:var(--sariq);opacity:.85;
+  transform:scaleX(0);transform-origin:left;transition:transform 1.1s cubic-bezier(.7,0,.2,1)}
+.bolim h2.ochildi em::after{transform:scaleX(1)}
+.harakatsiz .bolim h2 em::after{transform:scaleX(1)}
+
+/* Sichqoncha ortidan yuruvchi yorug'lik (kartalar) */
+.nurli{position:relative;isolation:isolate}
+.nurli::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(184,255,44,.13),rgba(47,107,255,.08) 35%,transparent 65%)}
+.nurli:hover::before{opacity:1}
+.narx--asosiy.nurli::before{background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.18),transparent 60%)}
+.nurli::after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;padding:1px;opacity:0;transition:opacity .4s;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(184,255,44,.75),transparent 60%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.nurli:hover::after{opacity:1}
+.ustoz__rasm{position:relative}
+
+/* Tugmalar: yaltiroq o'tish */
+.tugma{position:relative;overflow:hidden;isolation:isolate}
+.tugma::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;z-index:-1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);transition:left .8s cubic-bezier(.2,.8,.2,1)}
+.tugma:hover::after{left:120%}
+.tugma--chiziq::after{background:linear-gradient(100deg,transparent,rgba(184,255,44,.25),transparent)}
+
+/* Kursor halqasi videolar ustida */
+.kursor-halqa::after{content:"▶";position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:#0b0820;opacity:0;transition:opacity .25s}
+.kursor-halqa.video{width:84px;height:84px;margin:-42px 0 0 -42px;background:var(--sariq);border-color:var(--sariq);mix-blend-mode:normal}
+.kursor-halqa.video::after{opacity:1}
+
+/* Lenta JS bilan harakatlanadi */
+.harakat .lenta__ichi{animation:none;will-change:transform}
+
+/* Reels videosi parallaks uchun */
+.reel video{will-change:transform}
+
+/* Hero chiqishda silliq */
+.harakat .hero__ichi,.harakat .stek{will-change:transform,opacity}
+
+/* Pastki logo */
+.pastki__logo{overflow:hidden;padding-bottom:.04em}
+
+@media (prefers-reduced-motion: reduce){
+  .tugma::after,.nurli::before,.nurli::after{display:none}
+}

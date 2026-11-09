@@ -40,3 +40,10 @@ python -m http.server 8078
 - `js/sahna.js` — three.js zarrachalar: HARD WORK → 7.0 → globus → C1 (aylantirish bilan)
 - `js/ilova.js` — kursor, parallaks chiplar, magnit tugmalar, 3D kartalar, ball ustunlari, vaqt tanlash, filial tablari, test, forma
 - AI rasm/video yo'q (Higgsfield krediti tugagan) — vizual to'liq kodda
+
+## v3 (2026-11-09): backend, Telegram bot, animatsiyalar
+- `backend/` — Django: admin panel, o'quvchilar (login/parol), guruhlar, to'lov, davomat, natijalar, arizalar.
+  Telegram bot @hardworkschool_bot (`manage.py runbot`) — o'quvchi login bilan kiradi; saytdagi ariza adminga botda keladi.
+  Batafsil: `backend/README.md`. Token `backend/.env` da (gitga qo'shilmaydi).
+- Animatsiyalar: `js/harakat.js`, `css/v3.css`, `vendor/lenis.min.js` (silliq skroll, so'z-niqob sarlavhalar, sanoqlar, lenta).
+- Yuklash ekrani va Instagram obunachi soni olib tashlandi.
