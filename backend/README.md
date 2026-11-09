@@ -48,3 +48,6 @@ Guruh chatiga yuborish uchun botni guruhga qo'shing va guruhda `/myid` yozing (I
 ```
 .venv\Scripts\python manage.py test maktab
 ```
+
+## Server
+https://hardwork.osonhujjat.uz — cPanel (Ahost). `main` ga push qilingan o'zgarish cron orqali ≤5 daqiqada serverga tushadi (`deploy/yangila.sh`, log: `~/hardwork_yangila.log`).
