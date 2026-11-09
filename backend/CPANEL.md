@@ -32,7 +32,13 @@ bash ~/hardwork_app/backend/deploy/ornatish.sh <BOT_TOKEN>
 Skript: kutubxonalar, `.env` (maxfiy kalitlar avtomatik), baza, filiallar/kurslar, admin akkaunt (parolni ekranga chiqaradi).
 Keyin Setup Python App sahifasida **Restart** bosing va https://hardwork.osonhujjat.uz/admin/ ochilishini tekshiring.
 
-## 5. Botni serverga ulash
+## 5a. Bot (SSL'siz ham ishlaydi) — cron, har daqiqa
+```
+* * * * * bash $HOME/hardwork_app/backend/deploy/bot.sh
+```
+Bot har daqiqada 55 soniya polling qiladi. SSL chiqib webhook o'rnatilgach, bu cron o'zi jim bo'lib qoladi (keyin o'chirib qo'ysa bo'ladi).
+
+## 5. Botni webhook bilan ulash (SSL kerak)
 ```bash
 source ~/virtualenv/hardwork_app/backend/3.*/bin/activate && cd ~/hardwork_app/backend
 python manage.py webhook_qoy

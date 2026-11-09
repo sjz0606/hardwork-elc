@@ -161,3 +161,44 @@ class SaytTest(TestCase):
         for u in ('/backend/.env', '/.env', '/backend/db.sqlite3', '/db.sqlite3', '/README.md',
                   '/backend/config/settings.py', '/.git/config', '/css/../backend/.env'):
             self.assertIn(self.client.get(u).status_code, (301, 302, 404), u)
+
+
+@override_settings(BOT_TOKEN='1:test')
+class CronPollingTest(TestCase):
+    def test_muddat_rejimi_xabarga_javob_beradi_va_offset_saqlaydi(self):
+        from django.core.cache import cache
+        from maktab import bot as b
+        javoblar, chaqiruvlar = [], []
+        upd = types.Update.de_json({'update_id': 41, 'message': {
+            'message_id': 1, 'date': 0, 'text': '/myid', 'chat': {'id': 9, 'type': 'private'},
+            'from': {'id': 9, 'is_bot': False, 'first_name': 'T'}}})
+
+        def get_updates(offset=None, **kw):
+            chaqiruvlar.append(offset)
+            return [upd] if len(chaqiruvlar) == 1 else []
+
+        haqiqiy = b.bot_yarat
+
+        def soxta_bot(*a, **kw):
+            bt = haqiqiy(*a, **kw)
+            bt.get_webhook_info = lambda: mock.Mock(url='')
+            bt.set_my_commands = mock.Mock()
+            bt.get_updates = get_updates
+            bt.send_message = lambda chat, matn, **k: javoblar.append((chat, matn))
+            return bt
+
+        with mock.patch('maktab.management.commands.runbot.bot_yarat', soxta_bot), \
+                mock.patch('maktab.management.commands.runbot.close_old_connections', create=True), \
+                mock.patch.object(b, 'close_old_connections', lambda: None):
+            call_command('runbot', '--muddat', '5')
+        self.assertEqual(javoblar[0][0], 9)
+        self.assertEqual(cache.get('hwbot:offset'), 42)
+        self.assertEqual(chaqiruvlar[1], 42)
+
+    def test_webhook_bolsa_jim_chiqadi(self):
+        def soxta_bot(*a, **kw):
+            bt = mock.Mock()
+            bt.get_webhook_info.return_value = mock.Mock(url='https://x/bot/y/')
+            return bt
+        with mock.patch('maktab.management.commands.runbot.bot_yarat', soxta_bot):
+            call_command('runbot', '--muddat', '5')
