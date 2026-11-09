@@ -54,3 +54,25 @@ def ariza_qabul(request):
 
 def salomatlik(request):
     return JsonResponse({'ok': True})
+
+
+@csrf_exempt
+def bot_webhook(request, maxfiy):
+    """Telegram yangilanishlari (cPanel'da bot shu orqali ishlaydi)."""
+    import hmac
+
+    from telebot import types
+
+    from .bot import webhook_bot
+
+    kalit = settings.WEBHOOK_SECRET.encode()
+    sarlavha = request.headers.get('X-Telegram-Bot-Api-Secret-Token', '').encode()
+    if (request.method != 'POST' or not kalit
+            or not hmac.compare_digest(maxfiy.encode(), kalit) or not hmac.compare_digest(sarlavha, kalit)):
+        return HttpResponse(status=403)
+    try:
+        update = types.Update.de_json(request.body.decode('utf-8'))
+    except Exception:
+        return HttpResponse(status=400)
+    webhook_bot().process_new_updates([update])
+    return HttpResponse('ok')

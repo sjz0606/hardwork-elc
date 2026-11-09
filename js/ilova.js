@@ -1,8 +1,9 @@
 // HardWork — sahifa interaktivligi
 (function () {
-  // Arizalar manzili (backend yoki Telegram bot proksisi). Bo'sh bo'lsa — brauzerda saqlanadi.
-  // Lokal sinovda Django (python manage.py runserver) ga yuboradi; serverga joylagach shu yerga API manzilini yozing.
-  var FORMA_MANZIL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://127.0.0.1:8000/api/ariza/' : '';
+  // Arizalar manzili: Django backend (hardwork.osonhujjat.uz). Lokal sinovda — runserver (127.0.0.1:8000).
+  var FORMA_MANZIL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+    ? 'http://127.0.0.1:8000/api/ariza/'
+    : 'https://hardwork.osonhujjat.uz/api/ariza/';
 
   var kamHarakat = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var sichqonli = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -304,13 +305,18 @@
         : 'Arizangiz saqlandi. Tezroq javob uchun: <a href="https://t.me/' + f.tg + '" target="_blank" rel="noopener" style="text-decoration:underline">@' + f.tg + '</a> yoki <a href="tel:' + f.telHref + '" style="text-decoration:underline">' + f.tel + '</a>';
       if (ok) forma.reset();
     }
+    function lokalSaqla() {
+      try {
+        var arr = JSON.parse(localStorage.getItem('hardwork_arizalar') || '[]');
+        arr.push(m); localStorage.setItem('hardwork_arizalar', JSON.stringify(arr));
+      } catch (x) {}
+      tayyor(false);
+    }
     if (FORMA_MANZIL) {
       fetch(FORMA_MANZIL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) })
-        .then(function (r) { tayyor(r.ok); }).catch(function () { tayyor(false); });
+        .then(function (r) { if (r.ok) tayyor(true); else lokalSaqla(); }).catch(lokalSaqla);
     } else {
-      var arr = JSON.parse(localStorage.getItem('hardwork_arizalar') || '[]');
-      arr.push(m); localStorage.setItem('hardwork_arizalar', JSON.stringify(arr));
-      tayyor(false);
+      lokalSaqla();
     }
   });
 

@@ -15,10 +15,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-kalit')
 DEBUG = os.getenv('DEBUG', '0') == '1'
 ALLOWED_HOSTS = _royxat('ALLOWED_HOSTS', '127.0.0.1,localhost')
 CSRF_TRUSTED_ORIGINS = [f'https://{h}' for h in ALLOWED_HOSTS if h not in ('127.0.0.1', 'localhost')]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if not DEBUG:
+    SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = True
 
 BOT_TOKEN = os.getenv('BOT_TOKEN', '')
 ADMIN_CHAT_IDS = [int(x) for x in _royxat('ADMIN_CHAT_IDS') if x.lstrip('-').isdigit()]
 CORS_ORIGINS = _royxat('CORS_ORIGINS')
+SITE_URL = os.getenv('SITE_URL', '')                # https://hardwork.osonhujjat.uz
+WEBHOOK_SECRET = os.getenv('WEBHOOK_SECRET', '')    # Telegram webhook maxfiy kaliti
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -32,6 +37,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,4 +84,18 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
+
+# Bot holati (login/ariza qadamlari) bazada — webhookda jarayonlar o'rtasida saqlanadi
+CACHES = {'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache', 'LOCATION': 'kesh'}}
+
+LOGGING = {
+    'version': 1, 'disable_existing_loggers': False,
+    'handlers': {'konsol': {'class': 'logging.StreamHandler'}},
+    'root': {'handlers': ['konsol'], 'level': 'WARNING'},
+}
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

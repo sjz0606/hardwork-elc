@@ -13,4 +13,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/ariza/', views.ariza_qabul, name='ariza'),
     path('api/salomatlik/', views.salomatlik),
+    path('bot/<str:maxfiy>/', views.bot_webhook),
 ]

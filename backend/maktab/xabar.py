@@ -2,7 +2,6 @@
 import html
 import json
 import logging
-import threading
 import urllib.request
 
 from django.conf import settings
@@ -38,12 +37,13 @@ def ariza_matni(a):
 
 
 def ariza_xabari(a):
-    """Arizani umumiy adminlarga va filial chatiga fonda yuboradi."""
+    """Arizani umumiy adminlarga va filial chatiga yuboradi."""
     if not settings.BOT_TOKEN:
         return
     chatlar = set(settings.ADMIN_CHAT_IDS)
     if a.filial and a.filial.admin_chat_id:
         chatlar.add(a.filial.admin_chat_id)
     matn = ariza_matni(a)
+    # Sinxron: cPanel/Passenger fon oqimlarini so'rov tugagach to'xtatishi mumkin. Har biri ko'pi bilan 10 s.
     for c in chatlar:
-        threading.Thread(target=yubor, args=(c, matn), daemon=True).start()
+        yubor(c, matn)

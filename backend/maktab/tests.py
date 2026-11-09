@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.test import TestCase, override_settings
 from telebot import types
 
-from maktab.management.commands import runbot
+from maktab import bot as runbot
 from maktab.models import Ariza, Oquvchi
 
 
@@ -108,3 +108,40 @@ class BotTest(TestCase):
         self.bos(f'filial:{Filial.objects.get(kod="beruniy").pk}')
         a = Ariza.objects.get()
         self.assertEqual((a.ism, a.kurs, a.filial.kod, a.manba), ('Madina', 'CEFR', 'beruniy', 'bot'))
+
+
+@override_settings(BOT_TOKEN='1:test', WEBHOOK_SECRET='sir-123')
+class WebhookTest(TestCase):
+    def setUp(self):
+        from maktab import bot as b
+        b._webhook_bot = None
+        self.javoblar = []
+        self.wb = b.webhook_bot()
+        self.wb.send_message = lambda chat, matn, **kw: self.javoblar.append((chat, matn))
+
+    def _yubor(self, url, sarlavha):
+        upd = {'update_id': 1, 'message': {'message_id': 1, 'date': 0, 'text': '/myid',
+                                           'chat': {'id': 77, 'type': 'private'},
+                                           'from': {'id': 77, 'is_bot': False, 'first_name': 'T'}}}
+        return self.client.post(url, json.dumps(upd), content_type='application/json',
+                                HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN=sarlavha)
+
+    def test_notogri_kalit(self):
+        self.assertEqual(self._yubor('/bot/xato/', 'sir-123').status_code, 403)
+        self.assertEqual(self._yubor('/bot/sir-123/', 'xato').status_code, 403)
+        self.assertEqual(self._yubor('/bot/sir-123/', 'ŝ').status_code, 403)
+        self.assertEqual(self.javoblar, [])
+
+    def test_togri_kalit(self):
+        r = self._yubor('/bot/sir-123/', 'sir-123')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(self.javoblar[0][0], 77)
+        self.assertIn('77', self.javoblar[0][1])
+
+    def test_holat_bazada_saqlanadi(self):
+        from maktab import bot as b
+        b.holat[5] = {'qadam': 'a_ism'}
+        b.holat.yangila(5, ism='Ali')
+        self.assertEqual(b.holat.get(5), {'qadam': 'a_ism', 'ism': 'Ali'})
+        self.assertEqual(b.holat.pop(5)['ism'], 'Ali')
+        self.assertIsNone(b.holat.get(5))
