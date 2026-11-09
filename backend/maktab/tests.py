@@ -145,3 +145,19 @@ class WebhookTest(TestCase):
         self.assertEqual(b.holat.get(5), {'qadam': 'a_ism', 'ism': 'Ali'})
         self.assertEqual(b.holat.pop(5)['ism'], 'Ali')
         self.assertIsNone(b.holat.get(5))
+
+
+class SaytTest(TestCase):
+    def test_bosh_sahifa_sayt(self):
+        r = self.client.get('/')
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b'HardWork', b''.join(r.streaming_content))
+
+    def test_sayt_fayllari(self):
+        for u in ('/css/style.css', '/js/ilova.js', '/vendor/gsap.min.js'):
+            self.assertEqual(self.client.get(u).status_code, 200, u)
+
+    def test_maxfiy_fayllar_yopiq(self):
+        for u in ('/backend/.env', '/.env', '/backend/db.sqlite3', '/db.sqlite3', '/README.md',
+                  '/backend/config/settings.py', '/.git/config', '/css/../backend/.env'):
+            self.assertIn(self.client.get(u).status_code, (301, 302, 404), u)

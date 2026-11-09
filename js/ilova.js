@@ -1,9 +1,11 @@
 // HardWork — sahifa interaktivligi
 (function () {
   // Arizalar manzili: Django backend (hardwork.osonhujjat.uz). Lokal sinovda — runserver (127.0.0.1:8000).
-  var FORMA_MANZIL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
-    ? 'http://127.0.0.1:8000/api/ariza/'
-    : 'https://hardwork.osonhujjat.uz/api/ariza/';
+  var FORMA_MANZIL = location.hostname === 'hardwork.osonhujjat.uz' || location.port === '8000'
+    ? '/api/ariza/'                                   // sayt backend bilan bir joyda
+    : /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+      ? 'http://127.0.0.1:8000/api/ariza/'
+      : 'https://hardwork.osonhujjat.uz/api/ariza/';  // GitHub Pages nusxasi
 
   var kamHarakat = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var sichqonli = matchMedia('(hover: hover) and (pointer: fine)').matches;

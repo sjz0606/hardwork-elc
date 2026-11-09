@@ -6,6 +6,8 @@ cd "$HOME/hardwork_app" || exit 1
 exec 9>"$HOME/.hardwork_yangila.lock"
 flock -n 9 || exit 0
 
+# serverda: backend + statik sayt (index.html ildizda, cone rejimida o'zi keladi)
+git sparse-checkout set backend css js vendor media 2>/dev/null
 git fetch -q origin main || exit 1
 ESKI=$(git rev-parse HEAD)
 [ "$ESKI" = "$(git rev-parse origin/main)" ] && exit 0
