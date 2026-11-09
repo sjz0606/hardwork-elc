@@ -15,7 +15,7 @@ git reset -q --hard origin/main
 
 VENV=$(ls -d "$HOME"/virtualenv/hardwork_app/backend/3.*/ | tail -1)
 source "$VENV/bin/activate"
-git diff --quiet "$ESKI" HEAD -- backend/requirements.txt || pip install -q -r backend/requirements.txt
+git diff --quiet "$ESKI" HEAD -- backend/requirements.txt || { pip install -q --no-cache-dir -r backend/requirements.txt; bash backend/deploy/ixchamla.sh; }
 
 cd backend
 python manage.py migrate --noinput

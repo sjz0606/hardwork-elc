@@ -9,8 +9,8 @@ source "$VENV/bin/activate"
 cd "$ILOVA"
 
 echo "== Kutubxonalar o'rnatilmoqda..."
-pip install -q --upgrade pip
-pip install -q -r requirements.txt
+pip install -q --no-cache-dir -r requirements.txt
+bash "$ILOVA/deploy/ixchamla.sh"
 
 if [ ! -f .env ]; then
   [ -z "$1" ] && { echo "Foydalanish: bash deploy/ornatish.sh <BOT_TOKEN>"; exit 1; }

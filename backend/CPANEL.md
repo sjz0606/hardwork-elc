@@ -9,7 +9,9 @@ Bot cPanel'da **webhook** rejimida ishlaydi (Telegram xabarlarni `https://hardwo
 
 ## 2. Kodni yuklab olish (cPanel → Terminal)
 ```bash
-cd ~ && git clone https://github.com/sjz0606/hardwork-elc.git hardwork_app
+# faqat backend/ (sayt videolarisiz, disk tejash uchun)
+git clone --filter=blob:none --no-checkout --depth 1 https://github.com/sjz0606/hardwork-elc.git ~/hardwork_app
+cd ~/hardwork_app && git sparse-checkout set backend && git checkout main
 ```
 
 ## 3. Python ilova (cPanel → Setup Python App → Create Application)
