@@ -24,6 +24,8 @@ ADMIN_CHAT_IDS = [int(x) for x in _royxat('ADMIN_CHAT_IDS') if x.lstrip('-').isd
 CORS_ORIGINS = _royxat('CORS_ORIGINS')
 # 1 — botdan faqat login/parol bilan kirganlar foydalanadi; 0 — mehmonlarga narx/filial/yozilish ham ochiq
 BOT_FAQAT_LOGIN = os.getenv('BOT_FAQAT_LOGIN', '1') == '1'
+# Yangi arizalar botga login qilgan o'quvchilarga ham yuborilsinmi (1 — ha, 0 — faqat xodimlarga)
+ARIZA_OQUVCHILARGA = os.getenv('ARIZA_OQUVCHILARGA', '1') == '1'
 SITE_URL = os.getenv('SITE_URL', '')                # https://hardwork.osonhujjat.uz
 WEBHOOK_SECRET = os.getenv('WEBHOOK_SECRET', '')    # Telegram webhook maxfiy kaliti
 # Telegram Mini App (jurnal). Telegram faqat haqiqiy HTTPS manzilni ochadi.

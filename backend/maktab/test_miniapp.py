@@ -217,6 +217,16 @@ class XodimBotTest(TestCase):
 
 
 class ArizaOluvchilarTest(TestCase):
+    @override_settings(ARIZA_OQUVCHILARGA=True, ADMIN_CHAT_IDS=[99])
+    def test_login_qilgan_oquvchilarga_ham(self):
+        from maktab.models import Ariza
+        from maktab.xabar import ariza_oluvchilar
+        Oquvchi.objects.create(ism='Demo', login='demo', telegram_id=700)
+        Oquvchi.objects.create(ism='Botsiz', login='b')
+        Oquvchi.objects.create(ism='Nofaol', login='n', telegram_id=701, faol=False)
+        self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1')), {99, 700})
+
+    @override_settings(ARIZA_OQUVCHILARGA=False)
     def test_kimlarga_boradi(self):
         from maktab.models import Ariza
         from maktab.xabar import ariza_oluvchilar

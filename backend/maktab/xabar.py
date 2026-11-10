@@ -51,6 +51,10 @@ def ariza_oluvchilar(a):
         # direktor hammasini oladi; boshqalar — tanlangan filiallar (bo'sh = hammasi)
         if x.direktor or not filiallar or (a.filial_id and a.filial_id in {f.id for f in filiallar}):
             chatlar.add(x.telegram_id)
+    if settings.ARIZA_OQUVCHILARGA:
+        # botga login qilgan barcha o'quvchilarga ham (egasi talabi; .env ARIZA_OQUVCHILARGA=0 bilan o'chadi)
+        from .models import Oquvchi
+        chatlar.update(Oquvchi.objects.filter(faol=True, telegram_id__isnull=False).values_list('telegram_id', flat=True))
     return chatlar
 
 
