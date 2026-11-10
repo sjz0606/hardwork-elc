@@ -101,8 +101,6 @@ class Xodim(models.Model):
         Filial, blank=True, related_name='ariza_oluvchilar', verbose_name='Qaysi filial arizalari',
         help_text="Bo'sh qoldirilsa — barcha filiallar arizalari keladi")
     faol = models.BooleanField('Faol', default=True)
-    telegram_id = models.BigIntegerField('Telegram ID', null=True, blank=True, unique=True)
-    telegram_username = models.CharField('Telegram username', max_length=64, blank=True)
 
     class Meta:
         verbose_name = 'Xodim (ustoz/direktor)'
@@ -143,8 +141,6 @@ class Oquvchi(models.Model):
     guruh = models.ForeignKey(Guruh, on_delete=models.SET_NULL, null=True, blank=True,
                               related_name='oquvchilar', verbose_name='Guruh')
     faol = models.BooleanField('Faol', default=True)
-    telegram_id = models.BigIntegerField('Telegram ID', null=True, blank=True, unique=True)
-    telegram_username = models.CharField('Telegram username', max_length=64, blank=True)
     qoshilgan = models.DateField("Qo'shilgan sana", default=timezone.localdate)
 
     class Meta:
@@ -159,6 +155,25 @@ class Oquvchi(models.Model):
 
     def parol_tekshir(self, xom):
         return bool(self.parol) and check_password(xom, self.parol)
+
+
+class BotKirish(models.Model):
+    """Telegram chat qaysi login bilan botga kirgan. Bitta loginga istalgan sondagi Telegram akkaunt ulanishi mumkin."""
+    telegram_id = models.BigIntegerField('Telegram ID', unique=True)
+    username = models.CharField('Telegram username', max_length=64, blank=True)
+    oquvchi = models.ForeignKey(Oquvchi, on_delete=models.CASCADE, null=True, blank=True,
+                                related_name='bot_kirishlar', verbose_name="O'quvchi")
+    xodim = models.ForeignKey(Xodim, on_delete=models.CASCADE, null=True, blank=True,
+                              related_name='bot_kirishlar', verbose_name='Xodim')
+    yaratildi = models.DateTimeField('Kirgan vaqti', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Botdagi kirish'
+        verbose_name_plural = 'Botdagi kirishlar'
+        ordering = ['-yaratildi']
+
+    def __str__(self):
+        return f'{self.telegram_id} → {self.xodim or self.oquvchi}'
 
 
 class Tolov(models.Model):

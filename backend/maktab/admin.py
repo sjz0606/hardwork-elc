@@ -3,7 +3,7 @@ import secrets
 from django import forms
 from django.contrib import admin, messages
 
-from .models import Ariza, Dars, Davomat, Filial, Guruh, Kurs, Natija, Oquvchi, Tolov, Ustoz, Xodim
+from .models import Ariza, BotKirish, Dars, Davomat, Filial, Guruh, Kurs, Natija, Oquvchi, Tolov, Ustoz, Xodim
 
 
 @admin.register(Filial)
@@ -21,6 +21,27 @@ class KursAdmin(admin.ModelAdmin):
 @admin.register(Ustoz)
 class UstozAdmin(admin.ModelAdmin):
     list_display = ('ism', 'ball', 'tg')
+
+
+class BotKirishInline(admin.TabularInline):
+    model = BotKirish
+    fields = ('telegram_id', 'username', 'yaratildi')
+    readonly_fields = fields
+    extra = 0
+    verbose_name_plural = 'Botga shu login bilan kirgan Telegram akkauntlar'
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(BotKirish)
+class BotKirishAdmin(admin.ModelAdmin):
+    list_display = ('telegram_id', 'username', 'xodim', 'oquvchi', 'yaratildi')
+    search_fields = ('username', 'telegram_id', 'xodim__login', 'oquvchi__login')
+    readonly_fields = ('telegram_id', 'username', 'xodim', 'oquvchi', 'yaratildi')
+
+    def has_add_permission(self, request):
+        return False
 
 
 class OquvchiInline(admin.TabularInline):
@@ -79,13 +100,13 @@ class XodimAdmin(admin.ModelAdmin):
     list_display = ('ism', 'login', 'direktor', 'ustoz', 'ariza_oladi', 'faol', 'botda')
     list_filter = ('direktor', 'ariza_oladi', 'faol')
     filter_horizontal = ('ariza_filiallar',)
+    inlines = [BotKirishInline]
     search_fields = ('ism', 'login', 'tel')
-    readonly_fields = ('telegram_id', 'telegram_username')
     actions = ['parol_yangila', 'botdan_uzish']
 
     @admin.display(boolean=True, description='Botga kirgan')
     def botda(self, obj):
-        return obj.telegram_id is not None
+        return obj.bot_kirishlar.exists()
 
     def save_model(self, request, obj, form, change):
         xom = form.cleaned_data.get('yangi_parol')
@@ -108,8 +129,8 @@ class XodimAdmin(admin.ModelAdmin):
 
     @admin.action(description='Telegram akkauntdan uzish')
     def botdan_uzish(self, request, queryset):
-        n = queryset.update(telegram_id=None, telegram_username='')
-        messages.success(request, f'{n} ta xodim botdan uzildi.')
+        n, _ = BotKirish.objects.filter(xodim__in=queryset).delete()
+        messages.success(request, f'{n} ta Telegram akkaunt botdan uzildi.')
 
 
 class OquvchiForma(forms.ModelForm):
@@ -144,14 +165,13 @@ class OquvchiAdmin(admin.ModelAdmin):
     form = OquvchiForma
     list_display = ('ism', 'login', 'guruh', 'tel', 'faol', 'botda')
     list_filter = ('faol', 'guruh__filial', 'guruh')
-    search_fields = ('ism', 'login', 'tel', 'telegram_username')
-    readonly_fields = ('telegram_id', 'telegram_username')
-    inlines = [TolovInline, NatijaInline]
+    search_fields = ('ism', 'login', 'tel', 'bot_kirishlar__username')
+    inlines = [TolovInline, NatijaInline, BotKirishInline]
     actions = ['parol_yangila', 'botdan_uzish']
 
     @admin.display(boolean=True, description='Botga kirgan')
     def botda(self, obj):
-        return obj.telegram_id is not None
+        return obj.bot_kirishlar.exists()
 
     def save_model(self, request, obj, form, change):
         xom = form.cleaned_data.get('yangi_parol')
@@ -174,8 +194,8 @@ class OquvchiAdmin(admin.ModelAdmin):
 
     @admin.action(description='Telegram akkauntdan uzish')
     def botdan_uzish(self, request, queryset):
-        n = queryset.update(telegram_id=None, telegram_username='')
-        messages.success(request, f'{n} ta o\'quvchi botdan uzildi.')
+        n, _ = BotKirish.objects.filter(oquvchi__in=queryset).delete()
+        messages.success(request, f'{n} ta Telegram akkaunt botdan uzildi.')
 
 
 @admin.register(Tolov)

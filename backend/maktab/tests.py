@@ -7,7 +7,14 @@ from django.test import TestCase, override_settings
 from telebot import types
 
 from maktab import bot as runbot
-from maktab.models import Ariza, Oquvchi
+from maktab.models import BotKirish, Ariza, Oquvchi
+
+
+def ulash(obj, telegram_id):
+    """Testda: akkauntni Telegram chatga ulaydi (botda login qilgandek)."""
+    from maktab.models import Oquvchi as _O
+    BotKirish.objects.create(telegram_id=telegram_id, **({'oquvchi': obj} if isinstance(obj, _O) else {'xodim': obj}))
+    return obj
 
 
 @override_settings(BOT_TOKEN='', CORS_ORIGINS=['https://sjz0606.github.io'])
@@ -82,14 +89,14 @@ class BotTest(TestCase):
         self.yoz(runbot.KIRISH)
         self.yoz('DEMO')
         self.assertIn("Demo O'quvchi", self.yoz('demo123'))
-        self.assertEqual(Oquvchi.objects.get(login='demo').telegram_id, self.CHAT)
+        self.assertEqual(BotKirish.objects.filter(oquvchi__login='demo').values_list('telegram_id', flat=True).first(), self.CHAT)
         self.assertIn('18:00', self.yoz(runbot.JADVAL))
         self.assertIn('7.0', self.yoz(runbot.NATIJALAR))
         self.assertIn('Qarzdorlik', self.yoz(runbot.TOLOVLAR))
         self.assertIn('%', self.yoz(runbot.DAVOMAT))
         self.assertIn('IELTS-18', self.yoz(runbot.PROFIL))
         self.yoz(runbot.CHIQISH)
-        self.assertIsNone(Oquvchi.objects.get(login='demo').telegram_id)
+        self.assertIsNone(BotKirish.objects.filter(oquvchi__login='demo').values_list('telegram_id', flat=True).first())
         self.assertIn('Avval', self.yoz(runbot.JADVAL))
 
     def test_bloklash(self):
@@ -210,3 +217,45 @@ class CronPollingTest(TestCase):
             return bt
         with mock.patch('maktab.management.commands.runbot.bot_yarat', soxta_bot):
             call_command('runbot', '--muddat', '5')
+
+
+@override_settings(BOT_TOKEN='')
+class BirLoginKopAkkauntTest(TestCase):
+    """Bitta login bilan bir nechta Telegram akkauntdan kirish mumkin."""
+
+    def setUp(self):
+        call_command('boshlangich', '--demo', stdout=open('nul' if __import__('os').name == 'nt' else '/dev/null', 'w'))
+        runbot.holat.clear()
+        runbot.urinishlar.clear()
+        self.bot = telebot.TeleBot('1:test', threaded=False)
+        self.javob = {}
+        self.bot.send_message = lambda chat, matn, **kw: self.javob.__setitem__(chat, matn)
+        self.bot.delete_message = mock.Mock()
+        self.bot.set_chat_menu_button = mock.Mock()
+        runbot.royxatdan_otkaz(self.bot)
+        p = mock.patch.object(runbot, 'close_old_connections', lambda: None)
+        p.start()
+        self.addCleanup(p.stop)
+        self.n = 0
+
+    def yoz(self, chat, matn):
+        self.n += 1
+        self.bot.process_new_updates([types.Update.de_json({'update_id': self.n, 'message': {
+            'message_id': self.n, 'date': 0, 'text': matn, 'chat': {'id': chat, 'type': 'private'},
+            'from': {'id': chat, 'is_bot': False, 'first_name': 'T'}}})])
+        return self.javob[chat]
+
+    def kir(self, chat):
+        self.yoz(chat, runbot.KIRISH)
+        self.yoz(chat, 'demo')
+        return self.yoz(chat, 'demo123')
+
+    def test_ikki_akkaunt_bitta_login(self):
+        self.assertIn('Xush kelibsiz', self.kir(111))
+        self.assertIn('Xush kelibsiz', self.kir(222))   # avval "boshqa profilga ulangan" xatosi chiqardi
+        self.assertIn('18:00', self.yoz(111, runbot.JADVAL))
+        self.assertIn('18:00', self.yoz(222, runbot.JADVAL))
+        self.yoz(111, runbot.CHIQISH)                     # biri chiqsa, ikkinchisi qoladi
+        self.assertIn('kiring', self.yoz(111, runbot.JADVAL))
+        self.assertIn('18:00', self.yoz(222, runbot.JADVAL))
+        self.assertEqual(list(BotKirish.objects.values_list('telegram_id', flat=True)), [222])

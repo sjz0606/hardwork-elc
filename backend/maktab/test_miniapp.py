@@ -10,9 +10,16 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from maktab.miniapp import init_data_tekshir
-from maktab.models import Dars, Davomat, Filial, Guruh, Kurs, Oquvchi, Ustoz, Xodim
+from maktab.models import BotKirish, Dars, Davomat, Filial, Guruh, Kurs, Oquvchi, Ustoz, Xodim
 
 TOKEN = '123:ABC'
+
+
+def ulash(obj, telegram_id):
+    """Testda: akkauntni Telegram chatga ulaydi (botda login qilgandek)."""
+    from maktab.models import Oquvchi as _O
+    BotKirish.objects.create(telegram_id=telegram_id, **({'oquvchi': obj} if isinstance(obj, _O) else {'xodim': obj}))
+    return obj
 
 
 def imzola(user, token=TOKEN, auth_date=None):
@@ -36,11 +43,11 @@ class MiniAppTest(TestCase):
                                        boshlanish=soat(18), tugash=soat(20), hafta_kunlari=hk)
         self.g2 = Guruh.objects.create(nom='IELTS-9', kurs=k, filial=self.f2, ustoz=self.u2,
                                        boshlanish=soat(9, 30), tugash=soat(11, 30), hafta_kunlari=hk)
-        self.o1 = Oquvchi.objects.create(ism='Ali', login='ali', guruh=self.g1, telegram_id=301)
+        self.o1 = ulash(Oquvchi.objects.create(ism='Ali', login='ali', guruh=self.g1), 301)
         self.o2 = Oquvchi.objects.create(ism='Vali', login='vali', guruh=self.g1)
         self.o3 = Oquvchi.objects.create(ism='Hasan', login='hasan', guruh=self.g2)
-        self.ustoz = Xodim.objects.create(ism='Otabek', login='otabek', ustoz=self.u1, telegram_id=101)
-        self.direktor = Xodim.objects.create(ism='Jasurbek', login='jasur', direktor=True, telegram_id=201)
+        self.ustoz = ulash(Xodim.objects.create(ism='Otabek', login='otabek', ustoz=self.u1), 101)
+        self.direktor = ulash(Xodim.objects.create(ism='Jasurbek', login='jasur', direktor=True), 201)
         self.bugun = timezone.localdate().isoformat()
 
     def get(self, url, tid):
@@ -186,15 +193,13 @@ class XodimBotTest(TestCase):
         self.yoz('JASUR')
         matn, klav = self.yoz('sir123')
         self.assertIn('direktor', matn)
-        self.x.refresh_from_db()
-        self.assertEqual(self.x.telegram_id, 77)
+        self.assertEqual(list(self.x.bot_kirishlar.values_list('telegram_id', flat=True)), [77])
         tugmalar = [t for qator in klav.keyboard for t in qator]
         web = {t['text']: t['web_app']['url'] for t in tugmalar if t.get('web_app')}
         self.assertEqual(web, {self.b.JURNAL: 'https://hw.test/app/', self.b.HISOBOT: 'https://hw.test/app/?tab=hisobot'})
         self.bot.set_chat_menu_button.assert_called_once()
         self.yoz(self.b.CHIQISH)
-        self.x.refresh_from_db()
-        self.assertIsNone(self.x.telegram_id)
+        self.assertFalse(self.x.bot_kirishlar.exists())
 
     @override_settings(MINIAPP_URL='http://hw.test/app/')
     def test_https_yoq_bolsa_oddiy_tugma(self):
@@ -221,9 +226,9 @@ class ArizaOluvchilarTest(TestCase):
     def test_login_qilgan_oquvchilarga_ham(self):
         from maktab.models import Ariza
         from maktab.xabar import ariza_oluvchilar
-        Oquvchi.objects.create(ism='Demo', login='demo', telegram_id=700)
+        ulash(Oquvchi.objects.create(ism='Demo', login='demo'), 700)
         Oquvchi.objects.create(ism='Botsiz', login='b')
-        Oquvchi.objects.create(ism='Nofaol', login='n', telegram_id=701, faol=False)
+        ulash(Oquvchi.objects.create(ism='Nofaol', login='n', faol=False), 701)
         self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1')), {99, 700})
 
     @override_settings(ARIZA_OQUVCHILARGA=False)
@@ -232,14 +237,14 @@ class ArizaOluvchilarTest(TestCase):
         from maktab.xabar import ariza_oluvchilar
         f1 = Filial.objects.create(kod='chilonzor', nom='Chilonzor', admin_chat_id=-100500)
         f2 = Filial.objects.create(kod='chorsu', nom='Chorsu')
-        Xodim.objects.create(ism='Direktor', login='d', direktor=True, telegram_id=1)
+        ulash(Xodim.objects.create(ism='Direktor', login='d', direktor=True), 1)
         Xodim.objects.create(ism='Direktor botsiz', login='d2', direktor=True)              # telegram yo'q
-        Xodim.objects.create(ism='Ustoz', login='u', telegram_id=2, ariza_oladi=False)      # o'chirib qo'yilgan
-        Xodim.objects.create(ism='Ustoz 2', login='u2', telegram_id=6)                      # standart: oladi
-        Xodim.objects.create(ism='Admin hammasi', login='a', ariza_oladi=True, telegram_id=3)
-        x = Xodim.objects.create(ism='Chorsu admin', login='c', ariza_oladi=True, telegram_id=4)
+        ulash(Xodim.objects.create(ism='Ustoz', login='u', ariza_oladi=False), 2)      # o'chirib qo'yilgan
+        ulash(Xodim.objects.create(ism='Ustoz 2', login='u2'), 6)                      # standart: oladi
+        ulash(Xodim.objects.create(ism='Admin hammasi', login='a', ariza_oladi=True), 3)
+        x = ulash(Xodim.objects.create(ism='Chorsu admin', login='c', ariza_oladi=True), 4)
         x.ariza_filiallar.add(f2)
-        Xodim.objects.create(ism="O'chirilgan", login='o', ariza_oladi=True, telegram_id=5, faol=False)
+        ulash(Xodim.objects.create(ism="O'chirilgan", login='o', ariza_oladi=True, faol=False), 5)
         with override_settings(ADMIN_CHAT_IDS=[99]):
             self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1', filial=f1)), {99, -100500, 1, 3, 6})
             self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1', filial=f2)), {99, 1, 3, 4, 6})
@@ -248,7 +253,7 @@ class ArizaOluvchilarTest(TestCase):
     @override_settings(BOT_TOKEN='1:t', ADMIN_CHAT_IDS=[99])
     def test_saytdan_ariza_hammaga_yuboriladi(self):
         f = Filial.objects.create(kod='chorsu', nom='Chorsu')
-        Xodim.objects.create(ism='Direktor', login='d', direktor=True, telegram_id=1)
+        ulash(Xodim.objects.create(ism='Direktor', login='d', direktor=True), 1)
         with mock.patch('maktab.xabar.yubor') as yubor:
             r = self.client.post('/api/ariza/', json.dumps({'ism': 'Ali', 'tel': '+998901112233', 'filial': 'chorsu'}),
                                  content_type='application/json')

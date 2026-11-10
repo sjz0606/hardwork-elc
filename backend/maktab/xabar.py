@@ -40,21 +40,22 @@ def ariza_oluvchilar(a):
     """Ariza kimlarga borishi: .env ADMIN_CHAT_IDS, filial guruhi, direktorlar va «Arizalarni oladi» xodimlar."""
     from django.db.models import Q
 
-    from .models import Xodim
+    from .models import BotKirish
 
     chatlar = set(settings.ADMIN_CHAT_IDS)
     if a.filial and a.filial.admin_chat_id:
         chatlar.add(a.filial.admin_chat_id)
-    xodimlar = Xodim.objects.filter(faol=True, telegram_id__isnull=False).filter(Q(direktor=True) | Q(ariza_oladi=True))
-    for x in xodimlar.prefetch_related('ariza_filiallar'):
-        filiallar = list(x.ariza_filiallar.all())
+    xodim_kirishlar = (BotKirish.objects.filter(xodim__faol=True)
+                       .filter(Q(xodim__direktor=True) | Q(xodim__ariza_oladi=True))
+                       .select_related('xodim').prefetch_related('xodim__ariza_filiallar'))
+    for k in xodim_kirishlar:
+        filiallar = {f.id for f in k.xodim.ariza_filiallar.all()}
         # direktor hammasini oladi; boshqalar — tanlangan filiallar (bo'sh = hammasi)
-        if x.direktor or not filiallar or (a.filial_id and a.filial_id in {f.id for f in filiallar}):
-            chatlar.add(x.telegram_id)
+        if k.xodim.direktor or not filiallar or a.filial_id in filiallar:
+            chatlar.add(k.telegram_id)
     if settings.ARIZA_OQUVCHILARGA:
         # botga login qilgan barcha o'quvchilarga ham (egasi talabi; .env ARIZA_OQUVCHILARGA=0 bilan o'chadi)
-        from .models import Oquvchi
-        chatlar.update(Oquvchi.objects.filter(faol=True, telegram_id__isnull=False).values_list('telegram_id', flat=True))
+        chatlar.update(BotKirish.objects.filter(oquvchi__faol=True).values_list('telegram_id', flat=True))
     return chatlar
 
 

@@ -19,7 +19,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Dars, Davomat, Filial, Guruh, Oquvchi, Tolov, Ustoz, Xodim
+from .models import BotKirish, Dars, Davomat, Filial, Guruh, Oquvchi, Tolov, Ustoz, Xodim
 
 INIT_DATA_MUDDAT = 24 * 3600
 HOLATLAR = dict(Davomat.HOLATLAR)
@@ -60,10 +60,12 @@ def foydalanuvchi(request):
     if not user or not user.get('id'):
         return None, None
     tid = int(user['id'])
-    x = Xodim.objects.select_related('ustoz').filter(telegram_id=tid, faol=True).first()
-    if x:
-        return x, None
-    return None, Oquvchi.objects.select_related('guruh').filter(telegram_id=tid, faol=True).first()
+    k = BotKirish.objects.select_related('xodim__ustoz', 'oquvchi__guruh').filter(telegram_id=tid).first()
+    if not k:
+        return None, None
+    if k.xodim and k.xodim.faol:
+        return k.xodim, None
+    return None, (k.oquvchi if k.oquvchi and k.oquvchi.faol else None)
 
 
 def api(rollar=('xodim', 'oquvchi')):
@@ -309,7 +311,7 @@ def xodimlar(request):
             gs = gs.filter(filial_id=filial)
             if not gs.exists() and not x.direktor:
                 continue
-        natija.append({'id': x.id, 'ism': x.ism, 'rol': x.rol, 'faol': x.faol, 'botda': x.telegram_id is not None,
+        natija.append({'id': x.id, 'ism': x.ism, 'rol': x.rol, 'faol': x.faol, 'botda': x.bot_kirishlar.exists(),
                        'ustoz_id': x.ustoz_id, 'guruhlar': [{'id': g.id, 'nom': g.nom, 'smena': g.smena,
                                                             'filial': g.filial.nom} for g in gs.select_related('filial')]})
     # login berilmagan ustozlar ham ko'rinsin

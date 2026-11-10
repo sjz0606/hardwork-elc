@@ -12,7 +12,7 @@ from django.db import close_old_connections
 from django.utils import timezone
 from telebot import types
 
-from maktab.models import Ariza, Filial, Kurs, Oquvchi, Xodim
+from maktab.models import Ariza, BotKirish, Filial, Kurs, Oquvchi, Xodim
 from maktab.xabar import ariza_xabari
 
 log = logging.getLogger('hardwork.bot')
@@ -156,11 +156,11 @@ def bekor_klaviatura(kontakt=False):
 
 def joriy_oquvchi(chat_id):
     return Oquvchi.objects.select_related('guruh__kurs', 'guruh__filial', 'guruh__ustoz') \
-        .filter(telegram_id=chat_id, faol=True).first()
+        .filter(bot_kirishlar__telegram_id=chat_id, faol=True).first()
 
 
 def joriy_xodim(chat_id):
-    return Xodim.objects.select_related('ustoz').filter(telegram_id=chat_id, faol=True).first()
+    return Xodim.objects.select_related('ustoz').filter(bot_kirishlar__telegram_id=chat_id, faol=True).first()
 
 
 def asosiy_menyu(chat_id):
@@ -337,20 +337,13 @@ def royxatdan_otkaz(bot):
                 matn = f"❌ Login yoki parol noto'g'ri. (qolgan urinish: {MAKS_URINISH - soni})"
             bot.send_message(m.chat.id, matn, reply_markup=mehmon_klaviatura())
             return
-        if o.telegram_id and o.telegram_id != m.chat.id:
-            bot.send_message(m.chat.id, "Bu akkaunt boshqa Telegram profilga ulangan. Filial administratoriga murojaat qiling.",
-                             reply_markup=mehmon_klaviatura())
-            return
         urinishlar.pop(m.chat.id, None)
-        # Shu Telegramga avval boshqa akkaunt (o'quvchi yoki xodim) ulangan bo'lsa — uzamiz
-        for model in (Oquvchi, Xodim):
-            qs = model.objects.filter(telegram_id=m.chat.id)
-            if isinstance(o, model):
-                qs = qs.exclude(pk=o.pk)
-            qs.update(telegram_id=None, telegram_username='')
-        o.telegram_id = m.chat.id
-        o.telegram_username = m.from_user.username or ''
-        o.save(update_fields=['telegram_id', 'telegram_username'])
+        # Bitta login bilan istalgan sondagi Telegram akkauntdan kirish mumkin. Shu chat avval boshqa login bilan
+        # kirgan bo'lsa — yangisiga almashtiriladi.
+        BotKirish.objects.update_or_create(telegram_id=m.chat.id, defaults={
+            'username': m.from_user.username or '',
+            'xodim': o if isinstance(o, Xodim) else None,
+            'oquvchi': o if isinstance(o, Oquvchi) else None})
         if isinstance(o, Xodim):
             matn = (f'✅ Xush kelibsiz, <b>{e(o.ism)}</b>! (' + ('direktor' if o.direktor else 'ustoz') + ')\n'
                     + ('📒 <b>Jurnal</b> tugmasi orqali mini ilovani oching.' if miniapp_url() else
@@ -364,8 +357,7 @@ def royxatdan_otkaz(bot):
     @bot.message_handler(func=lambda m: shaxsiy(m) and m.text == CHIQISH)
     @db
     def chiqish(m):
-        n = sum(model.objects.filter(telegram_id=m.chat.id).update(telegram_id=None, telegram_username='')
-                for model in (Oquvchi, Xodim))
+        n, _ = BotKirish.objects.filter(telegram_id=m.chat.id).delete()
         holat.pop(m.chat.id, None)
         bot.send_message(m.chat.id, 'Akkauntdan chiqdingiz.' if n else 'Siz tizimga kirmagansiz.',
                          reply_markup=mehmon_klaviatura())
