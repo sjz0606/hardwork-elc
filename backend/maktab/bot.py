@@ -79,9 +79,14 @@ def som(n):
 def mehmon_klaviatura():
     k = types.ReplyKeyboardMarkup(resize_keyboard=True)
     k.row(KIRISH)
-    k.row(YOZILISH)
-    k.row(NARXLAR, FILIALLAR)
+    if not settings.BOT_FAQAT_LOGIN:
+        k.row(YOZILISH)
+        k.row(NARXLAR, FILIALLAR)
     return k
+
+
+LOGIN_KERAK = ("🔐 Botdan foydalanish uchun markaz bergan <b>login va parol</b> bilan kiring.\n"
+               "Login yo'q bo'lsa — filial administratoriga murojaat qiling.")
 
 
 def oquvchi_klaviatura():
@@ -148,6 +153,13 @@ def royxatdan_otkaz(bot):
 
     shaxsiy = lambda m: m.chat.type == 'private'  # noqa: E731
 
+    def mehmonga_yopiq(m):
+        """Faqat-login rejimida kirmagan foydalanuvchini to'xtatadi."""
+        if settings.BOT_FAQAT_LOGIN and not joriy_oquvchi(m.chat.id):
+            bot.send_message(m.chat.id, LOGIN_KERAK, reply_markup=mehmon_klaviatura())
+            return True
+        return False
+
     # ---------------- Umumiy ----------------
     @bot.message_handler(commands=['start'], func=shaxsiy)
     @db
@@ -156,6 +168,10 @@ def royxatdan_otkaz(bot):
         o = joriy_oquvchi(m.chat.id)
         if o:
             matn = f'Salom, <b>{e(o.ism)}</b>! 👋\nHardWork o\'quvchi kabinetiga xush kelibsiz.'
+        elif settings.BOT_FAQAT_LOGIN:
+            bot.send_message(m.chat.id, 'Assalomu alaykum! 👋\n<b>HardWork English Learning Centre</b> boti.\n\n'
+                             + LOGIN_KERAK, reply_markup=mehmon_klaviatura())
+            return kirish(m)
         else:
             matn = ('Assalomu alaykum! 👋\n<b>HardWork English Learning Centre</b> botiga xush kelibsiz.\n\n'
                     "• O'quvchilar — <b>🔐 Kirish</b> tugmasi orqali markaz bergan login va parol bilan kiring.\n"
@@ -176,6 +192,8 @@ def royxatdan_otkaz(bot):
     @bot.message_handler(func=lambda m: shaxsiy(m) and m.text == NARXLAR)
     @db
     def narxlar(m):
+        if mehmonga_yopiq(m):
+            return
         qatorlar = ['<b>Kurslar va narxlar</b>\n']
         for k in Kurs.objects.order_by('narx'):
             qatorlar.append(f'📚 <b>{e(k.nom)}</b>' + (f' — {e(k.tavsif)}' if k.tavsif else '') + f'\n     {som(k.narx)}/oy')
@@ -185,6 +203,8 @@ def royxatdan_otkaz(bot):
     @bot.message_handler(func=lambda m: shaxsiy(m) and m.text == FILIALLAR)
     @db
     def filiallar(m):
+        if mehmonga_yopiq(m):
+            return
         qatorlar = ['<b>Filiallarimiz</b>']
         for f in Filial.objects.order_by('pk'):
             q = f'\n📍 <b>{e(f.nom)}</b>'
@@ -361,6 +381,8 @@ def royxatdan_otkaz(bot):
     @bot.message_handler(func=tugma(YOZILISH))
     @db
     def yozilish(m):
+        if mehmonga_yopiq(m):
+            return
         holat[m.chat.id] = {'qadam': 'a_ism'}
         bot.send_message(m.chat.id, '📝 Ismingizni yozing:', reply_markup=bekor_klaviatura())
 
@@ -429,6 +451,8 @@ def royxatdan_otkaz(bot):
     @bot.message_handler(func=shaxsiy, content_types=['text'])
     @db
     def boshqa(m):
+        if mehmonga_yopiq(m):
+            return
         bot.send_message(m.chat.id, 'Menyudan tanlang 👇', reply_markup=asosiy_menyu(m.chat.id))
 
 

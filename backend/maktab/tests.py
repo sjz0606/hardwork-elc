@@ -74,7 +74,8 @@ class BotTest(TestCase):
         return self.yuborilgan[-1]
 
     def test_login_va_kabinet(self):
-        self.assertIn('xush kelibsiz', self.yoz('/start'))
+        self.assertIn('Loginingizni', self.yoz('/start'))
+        self.yoz(runbot.BEKOR)
         self.yoz(runbot.KIRISH)
         self.yoz('demo')
         self.assertIn('noto', self.yoz('xato-parol'))
@@ -98,6 +99,13 @@ class BotTest(TestCase):
             self.yoz('yomon')
         self.assertIn('daqiqadan', self.yoz(runbot.KIRISH))
 
+    def test_mehmonga_yopiq(self):
+        self.assertIn('login va parol', self.yoz(runbot.NARXLAR))
+        self.assertIn('login va parol', self.yoz(runbot.YOZILISH))
+        self.assertIn('login va parol', self.yoz('salom'))
+        self.assertIsNone(runbot.holat.get(self.CHAT))
+
+    @override_settings(BOT_TOKEN='', BOT_FAQAT_LOGIN=False)
     def test_ariza_bot(self):
         self.yoz(runbot.YOZILISH)
         self.yoz('Madina')

@@ -22,6 +22,8 @@ if not DEBUG:
 BOT_TOKEN = os.getenv('BOT_TOKEN', '')
 ADMIN_CHAT_IDS = [int(x) for x in _royxat('ADMIN_CHAT_IDS') if x.lstrip('-').isdigit()]
 CORS_ORIGINS = _royxat('CORS_ORIGINS')
+# 1 — botdan faqat login/parol bilan kirganlar foydalanadi; 0 — mehmonlarga narx/filial/yozilish ham ochiq
+BOT_FAQAT_LOGIN = os.getenv('BOT_FAQAT_LOGIN', '1') == '1'
 SITE_URL = os.getenv('SITE_URL', '')                # https://hardwork.osonhujjat.uz
 WEBHOOK_SECRET = os.getenv('WEBHOOK_SECRET', '')    # Telegram webhook maxfiy kaliti
 
