@@ -19,7 +19,8 @@ class Command(BaseCommand):
         bot = bot_yarat(threaded=False)
         if holat:
             i = bot.get_webhook_info()
-            self.stdout.write(f'url: {i.url or "-"}\nkutilayotgan: {i.pending_update_count}\n'
+            url = i.url.split('/bot/')[0] + '/bot/***/' if i.url else '-'  # maxfiy kalit ko'rsatilmaydi
+            self.stdout.write(f'url: {url}\nkutilayotgan: {i.pending_update_count}\n'
                               f'oxirgi xato: {i.last_error_message or "-"}')
             return
         if ochir:
