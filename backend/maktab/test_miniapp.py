@@ -214,3 +214,33 @@ class XodimBotTest(TestCase):
         f = OquvchiForma(data={'ism': 'Y', 'login': 'jasur', 'faol': True, 'qoshilgan': date.today()})
         self.assertFalse(f.is_valid())
         self.assertIn('login', f.errors)
+
+
+class ArizaOluvchilarTest(TestCase):
+    def test_kimlarga_boradi(self):
+        from maktab.models import Ariza
+        from maktab.xabar import ariza_oluvchilar
+        f1 = Filial.objects.create(kod='chilonzor', nom='Chilonzor', admin_chat_id=-100500)
+        f2 = Filial.objects.create(kod='chorsu', nom='Chorsu')
+        Xodim.objects.create(ism='Direktor', login='d', direktor=True, telegram_id=1)
+        Xodim.objects.create(ism='Direktor botsiz', login='d2', direktor=True)              # telegram yo'q
+        Xodim.objects.create(ism='Ustoz', login='u', telegram_id=2, ariza_oladi=False)      # o'chirib qo'yilgan
+        Xodim.objects.create(ism='Ustoz 2', login='u2', telegram_id=6)                      # standart: oladi
+        Xodim.objects.create(ism='Admin hammasi', login='a', ariza_oladi=True, telegram_id=3)
+        x = Xodim.objects.create(ism='Chorsu admin', login='c', ariza_oladi=True, telegram_id=4)
+        x.ariza_filiallar.add(f2)
+        Xodim.objects.create(ism="O'chirilgan", login='o', ariza_oladi=True, telegram_id=5, faol=False)
+        with override_settings(ADMIN_CHAT_IDS=[99]):
+            self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1', filial=f1)), {99, -100500, 1, 3, 6})
+            self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1', filial=f2)), {99, 1, 3, 4, 6})
+            self.assertEqual(ariza_oluvchilar(Ariza(ism='A', tel='1')), {99, 1, 3, 6})
+
+    @override_settings(BOT_TOKEN='1:t', ADMIN_CHAT_IDS=[99])
+    def test_saytdan_ariza_hammaga_yuboriladi(self):
+        f = Filial.objects.create(kod='chorsu', nom='Chorsu')
+        Xodim.objects.create(ism='Direktor', login='d', direktor=True, telegram_id=1)
+        with mock.patch('maktab.xabar.yubor') as yubor:
+            r = self.client.post('/api/ariza/', json.dumps({'ism': 'Ali', 'tel': '+998901112233', 'filial': 'chorsu'}),
+                                 content_type='application/json')
+        self.assertEqual(r.status_code, 201)
+        self.assertEqual({c.args[0] for c in yubor.call_args_list}, {99, 1})

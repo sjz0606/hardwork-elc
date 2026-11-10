@@ -76,8 +76,9 @@ class XodimForma(forms.ModelForm):
 @admin.register(Xodim)
 class XodimAdmin(admin.ModelAdmin):
     form = XodimForma
-    list_display = ('ism', 'login', 'direktor', 'ustoz', 'faol', 'botda')
-    list_filter = ('direktor', 'faol')
+    list_display = ('ism', 'login', 'direktor', 'ustoz', 'ariza_oladi', 'faol', 'botda')
+    list_filter = ('direktor', 'ariza_oladi', 'faol')
+    filter_horizontal = ('ariza_filiallar',)
     search_fields = ('ism', 'login', 'tel')
     readonly_fields = ('telegram_id', 'telegram_username')
     actions = ['parol_yangila', 'botdan_uzish']

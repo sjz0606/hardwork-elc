@@ -93,6 +93,13 @@ class Xodim(models.Model):
     ustoz = models.OneToOneField(Ustoz, on_delete=models.SET_NULL, null=True, blank=True, related_name='xodim',
                                  verbose_name='Ustoz profili',
                                  help_text="Dars beradigan bo'lsa — shu ustozning guruhlari jurnalida ishlaydi")
+    ariza_oladi = models.BooleanField(
+        'Arizalarni oladi', default=True,
+        help_text="Yangi arizalar (saytdan/botdan) botga login qilgan xodimga yuboriladi. Olib tashlasangiz — kelmaydi "
+                  "(direktorlarga doim boradi)")
+    ariza_filiallar = models.ManyToManyField(
+        Filial, blank=True, related_name='ariza_oluvchilar', verbose_name='Qaysi filial arizalari',
+        help_text="Bo'sh qoldirilsa — barcha filiallar arizalari keladi")
     faol = models.BooleanField('Faol', default=True)
     telegram_id = models.BigIntegerField('Telegram ID', null=True, blank=True, unique=True)
     telegram_username = models.CharField('Telegram username', max_length=64, blank=True)

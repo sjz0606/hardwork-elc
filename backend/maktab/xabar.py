@@ -36,13 +36,29 @@ def ariza_matni(a):
     return '\n'.join(qatorlar)
 
 
-def ariza_xabari(a):
-    """Arizani umumiy adminlarga va filial chatiga yuboradi."""
-    if not settings.BOT_TOKEN:
-        return
+def ariza_oluvchilar(a):
+    """Ariza kimlarga borishi: .env ADMIN_CHAT_IDS, filial guruhi, direktorlar va «Arizalarni oladi» xodimlar."""
+    from django.db.models import Q
+
+    from .models import Xodim
+
     chatlar = set(settings.ADMIN_CHAT_IDS)
     if a.filial and a.filial.admin_chat_id:
         chatlar.add(a.filial.admin_chat_id)
+    xodimlar = Xodim.objects.filter(faol=True, telegram_id__isnull=False).filter(Q(direktor=True) | Q(ariza_oladi=True))
+    for x in xodimlar.prefetch_related('ariza_filiallar'):
+        filiallar = list(x.ariza_filiallar.all())
+        # direktor hammasini oladi; boshqalar — tanlangan filiallar (bo'sh = hammasi)
+        if x.direktor or not filiallar or (a.filial_id and a.filial_id in {f.id for f in filiallar}):
+            chatlar.add(x.telegram_id)
+    return chatlar
+
+
+def ariza_xabari(a):
+    """Yangi arizani barcha mas'ullarga botda yuboradi."""
+    if not settings.BOT_TOKEN:
+        return
+    chatlar = ariza_oluvchilar(a)
     matn = ariza_matni(a)
     # Sinxron: cPanel/Passenger fon oqimlarini so'rov tugagach to'xtatishi mumkin. Har biri ko'pi bilan 10 s.
     for c in chatlar:
