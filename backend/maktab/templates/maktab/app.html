@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HardWork — Jurnal</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:var(--tg-theme-bg-color,#0f0b26);--bg2:var(--tg-theme-secondary-bg-color,#18123a);
+  --matn:var(--tg-theme-text-color,#f4f6fb);--kul:var(--tg-theme-hint-color,#9a93b8);
+  --urgu:var(--tg-theme-button-color,#2f6bff);--urgu-matn:var(--tg-theme-button-text-color,#fff);
+  --havola:var(--tg-theme-link-color,#7fa2ff);--chiziq:color-mix(in srgb,var(--matn) 10%,transparent);
+  --yashil:#22c55e;--sariq:#f59e0b;--kok:#60a5fa;--qizil:#ef4444;--r:14px
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;background:var(--bg2);color:var(--matn);padding-bottom:90px;min-height:100vh}
+button,select,input,textarea{font:inherit;color:inherit}
+.bosh{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 14px 0;border-bottom:1px solid var(--chiziq)}
+.bosh__qator{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bosh__qator h1{font-size:17px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rol{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;border-radius:20px;background:color-mix(in srgb,var(--urgu) 18%,transparent);color:var(--havola)}
+.tablar{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tablar button{flex:1;border:0;background:none;padding:10px 6px;font-weight:600;color:var(--kul);border-bottom:2.5px solid transparent;white-space:nowrap}
+.tablar button.faol{color:var(--matn);border-color:var(--urgu)}
+main{padding:12px}
+.karta{background:var(--bg);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.karta--bosiladi{cursor:pointer;transition:transform .12s}
+.karta--bosiladi:active{transform:scale(.985)}
+.kunlar{display:flex;gap:6px;align-items:center;margin-bottom:10px}
+.kunlar__ichi{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;flex:1}
+.kun{border:0;background:var(--bg);border-radius:12px;padding:7px 0;text-align:center;line-height:1.15}
+.kun small{display:block;font-size:11px;color:var(--kul)}
+.kun b{font-size:16px}
+.kun.bugun b{color:var(--havola)}
+.kun.tanlangan{background:var(--urgu);color:var(--urgu-matn)}
+.kun.tanlangan small{color:inherit;opacity:.8}
+.strelka{border:0;background:var(--bg);border-radius:10px;width:32px;height:44px;font-size:18px;color:var(--kul)}
+.filtr{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.filtr select,.filtr input{flex:1;min-width:130px;border:1px solid var(--chiziq);background:var(--bg);border-radius:10px;padding:9px 10px}
+.chip{border:1px solid var(--chiziq);background:var(--bg);border-radius:20px;padding:7px 12px;font-size:13px;font-weight:600}
+.chip.faol{background:var(--urgu);color:var(--urgu-matn);border-color:transparent}
+.dars{display:flex;gap:12px;align-items:center}
+.dars__vaqt{min-width:62px;text-align:center;font-weight:800;font-size:15px;line-height:1.1}
+.dars__vaqt small{display:block;font-weight:500;font-size:11px;color:var(--kul)}
+.dars__ichi{flex:1;min-width:0}
+.dars__ichi b{font-size:15.5px}
+.dars__ichi p{font-size:13px;color:var(--kul);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.belgi{font-size:11.5px;font-weight:700;padding:4px 8px;border-radius:8px;white-space:nowrap}
+.belgi--ok{background:color-mix(in srgb,var(--yashil) 18%,transparent);color:var(--yashil)}
+.belgi--yoq{background:color-mix(in srgb,var(--sariq) 18%,transparent);color:var(--sariq)}
+.bosh2{font-size:13px;font-weight:700;color:var(--kul);text-transform:uppercase;letter-spacing:.05em;margin:16px 4px 8px}
+.bosh2:first-child{margin-top:4px}
+.bosh-blok h2{font-size:20px;margin-bottom:2px}
+.bosh-blok p{color:var(--kul);font-size:13.5px}
+.maydon{display:block;margin-top:10px}
+.maydon span{display:block;font-size:12.5px;color:var(--kul);margin-bottom:4px}
+.maydon input,.maydon textarea{width:100%;border:1px solid var(--chiziq);background:var(--bg2);border-radius:10px;padding:10px;resize:vertical}
+.oq{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--chiziq)}
+.oq:first-child{border-top:0}
+.oq__ism{flex:1;min-width:0;font-weight:600;font-size:14.5px}
+.oq__ism small{display:block;font-weight:400;color:var(--kul);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.holatlar{display:flex;gap:3px}
+.holatlar button{width:34px;height:34px;border-radius:10px;border:1px solid var(--chiziq);background:var(--bg2);font-size:14px;font-weight:800}
+.holatlar button[data-h=keldi].on{background:var(--yashil);color:#fff;border-color:transparent}
+.holatlar button[data-h=kechikdi].on{background:var(--sariq);color:#fff;border-color:transparent}
+.holatlar button[data-h=sababli].on{background:var(--kok);color:#fff;border-color:transparent}
+.holatlar button[data-h=kelmadi].on{background:var(--qizil);color:#fff;border-color:transparent}
+.baho{width:48px;height:34px;border-radius:10px;border:1px solid var(--chiziq);background:var(--bg2);text-align:center}
+.izoh-tugma{border:0;background:none;color:var(--kul);font-size:16px;width:24px}
+.izoh-input{width:100%;margin-top:6px;border:1px solid var(--chiziq);background:var(--bg2);border-radius:8px;padding:7px 9px;font-size:13px}
+.qator-tugmalar{display:flex;gap:8px;margin:10px 0}
+.tugma{border:0;border-radius:12px;padding:12px 14px;font-weight:700;background:var(--urgu);color:var(--urgu-matn);width:100%}
+.tugma--ikkinchi{background:var(--bg);color:var(--matn);border:1px solid var(--chiziq)}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.kpi div{background:var(--bg);border-radius:var(--r);padding:12px}
+.kpi b{display:block;font-size:22px;font-weight:800;line-height:1.1}
+.kpi small{color:var(--kul);font-size:12px}
+.chiziq-bar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:var(--bg2);margin:8px 0 6px}
+.chiziq-bar i{display:block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--kul)}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;background:var(--c)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11.5px;color:var(--kul);font-weight:600;text-align:right;padding:6px 4px;border-bottom:1px solid var(--chiziq)}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 4px;text-align:right;border-bottom:1px solid var(--chiziq)}
+tr[data-bos]{cursor:pointer}
+tr:last-child td{border-bottom:0}
+.foiz-ok{color:var(--yashil);font-weight:700}.foiz-orta{color:var(--sariq);font-weight:700}.foiz-past{color:var(--qizil);font-weight:700}
+.bosh-xabar{text-align:center;color:var(--kul);padding:40px 16px}
+.bosh-xabar b{display:block;font-size:40px;margin-bottom:8px}
+.yuklanmoqda{height:64px;border-radius:var(--r);margin-bottom:10px;background:linear-gradient(90deg,var(--bg) 25%,color-mix(in srgb,var(--matn) 6%,var(--bg)) 50%,var(--bg) 75%);background-size:200% 100%;animation:shim 1.2s infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#111;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;transition:transform .3s;z-index:20;max-width:90vw}
+.toast.ko{transform:translateX(-50%)}
+.xodim-guruhlar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ism-qator{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.yashirin{display:none!important}
+</style>
+</head>
+<body>
+<header class="bosh">
+  <div class="bosh__qator"><h1 id="sarlavha">HardWork jurnal</h1><span class="rol" id="rol"></span></div>
+  <nav class="tablar" id="tablar"></nav>
+</header>
+<main id="ekran"><div class="yuklanmoqda"></div><div class="yuklanmoqda"></div></main>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+const DEV = new URLSearchParams(location.search).get('dev');   // faqat DEBUG serverda ishlaydi
+const $ = s => document.querySelector(s);
+const ekran = $('#ekran');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KUN = ['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+const OY = ['yan','fev','mar','apr','may','iyun','iyul','avg','sen','okt','noy','dek'];
+const HOLAT = {keldi:['✓','Keldi'], kechikdi:['⏱','Kechikdi'], sababli:['S','Sababli'], kelmadi:['✗','Kelmadi']};
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const sanaD = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const chiroyli = s => { const d = sanaD(s); return d.getDate()+' '+OY[d.getMonth()]+', '+KUN[d.getDay()]; };
+const som = n => (n||0).toLocaleString('ru-RU').replace(/,/g,' ')+" so'm";
+const foizCls = f => f == null ? '' : f >= 85 ? 'foiz-ok' : f >= 65 ? 'foiz-orta' : 'foiz-past';
+const foizM = f => f == null ? '—' : `<span class="${foizCls(f)}">${f}%</span>`;
+const bugun = iso(new Date());
+
+const H = {men:null, tab:null, sana:bugun, filial:'', ustoz:'', meniki:false, davr:'oy', hFilial:'', stek:[]};
+
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('ko'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('ko'), 2400); }
+function haptik(t) { try { tg && tg.HapticFeedback.notificationOccurred(t); } catch (e) {} }
+
+async function api(yol, opts = {}) {
+  const h = {'Content-Type': 'application/json', 'X-Init-Data': tg ? tg.initData : ''};
+  if (DEV) h['X-Dev-Login'] = DEV;
+  const r = await fetch('/app/api/' + yol, {...opts, headers: h});
+  const j = await r.json().catch(() => ({xato: 'Server javobi noto\'g\'ri'}));
+  if (!r.ok) throw new Error(j.xato || ('Xato ' + r.status));
+  return j;
+}
+const yuklanmoqda = (n = 3) => { ekran.innerHTML = '<div class="yuklanmoqda"></div>'.repeat(n); };
+const xato = e => { ekran.innerHTML = `<div class="bosh-xabar"><b>⚠️</b>${esc(e.message || e)}</div>`; };
+
+// ---------------- navigatsiya (Telegram BackButton) ----------------
+function kir(fn) { H.stek.push(fn); fn(); orqaYangila(); }
+function orqa() { H.stek.pop(); const f = H.stek[H.stek.length-1]; f ? f() : tabOch(H.tab); orqaYangila(); }
+function orqaYangila() {
+  if (!tg) return;
+  H.stek.length > 1 ? tg.BackButton.show() : tg.BackButton.hide();
+  if (H.stek.length <= 1) tg.MainButton.hide();
+}
+if (tg) tg.BackButton.onClick(orqa);
+
+function tabOch(t) {
+  H.tab = t; H.stek = [];
+  document.querySelectorAll('#tablar button').forEach(b => b.classList.toggle('faol', b.dataset.t === t));
+  if (tg) tg.MainButton.hide();
+  window.scrollTo(0, 0);
+  ({jurnal: () => kir(darslarEkrani), hisobot: () => kir(hisobotEkrani), xodimlar: () => kir(xodimlarEkrani),
+    mening: () => kir(meningEkrani)})[t]();
+}
+
+// ---------------- 1. Darslar ro'yxati (kun bo'yicha) ----------------
+function kunlarStrip() {
+  const t = sanaD(H.sana), dush = new Date(t); dush.setDate(t.getDate() - ((t.getDay() + 6) % 7));
+  let html = '<div class="kunlar"><button class="strelka" data-hafta="-7">‹</button><div class="kunlar__ichi">';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(dush); d.setDate(dush.getDate() + i); const s = iso(d);
+    html += `<button class="kun${s === H.sana ? ' tanlangan' : ''}${s === bugun ? ' bugun' : ''}" data-sana="${s}"><small>${KUN[d.getDay()]}</small><b>${d.getDate()}</b></button>`;
+  }
+  return html + '</div><button class="strelka" data-hafta="7">›</button></div>';
+}
+function kunlarUlash(qayta) {
+  ekran.querySelectorAll('[data-sana]').forEach(b => b.onclick = () => { H.sana = b.dataset.sana; qayta(); });
+  ekran.querySelectorAll('[data-hafta]').forEach(b => b.onclick = () => { const d = sanaD(H.sana); d.setDate(d.getDate() + +b.dataset.hafta); H.sana = iso(d); qayta(); });
+}
+
+async function darslarEkrani() {
+  const m = H.men;
+  let filtr = '';
+  if (m.direktor) {
+    filtr = `<div class="filtr">
+      <select id="fFilial"><option value="">Barcha filiallar</option>${m.filiallar.map(f => `<option value="${f.id}" ${H.filial == f.id ? 'selected' : ''}>${esc(f.nom)}</option>`).join('')}</select>
+      <select id="fUstoz"><option value="">Barcha ustozlar</option>${m.ustozlar.map(u => `<option value="${u.id}" ${H.ustoz == u.id ? 'selected' : ''}>${esc(u.ism)}</option>`).join('')}</select>
+    </div>${m.ustoz_id ? `<div class="filtr"><button class="chip ${H.meniki ? 'faol' : ''}" id="fMeniki">👤 Faqat mening guruhlarim</button></div>` : ''}`;
+  }
+  ekran.innerHTML = kunlarStrip() + filtr + '<div id="royxat"><div class="yuklanmoqda"></div><div class="yuklanmoqda"></div></div>';
+  kunlarUlash(darslarEkrani);
+  if (m.direktor) {
+    $('#fFilial').onchange = e => { H.filial = e.target.value; darslarEkrani(); };
+    $('#fUstoz').onchange = e => { H.ustoz = e.target.value; darslarEkrani(); };
+    const mk = $('#fMeniki'); if (mk) mk.onclick = () => { H.meniki = !H.meniki; darslarEkrani(); };
+  }
+  try {
+    const q = new URLSearchParams({sana: H.sana, filial: H.filial, ustoz: H.ustoz, meniki: H.meniki ? 1 : 0});
+    const j = await api('darslar?' + q);
+    const r = $('#royxat'); if (!r) return;
+    const tol = j.darslar.filter(d => d.toldirilgan).length;
+    r.innerHTML = `<div class="bosh2">${chiroyli(j.sana)} · ${j.darslar.length} ta dars${j.darslar.length ? ` · ${tol} tasi yozilgan` : ''}</div>` +
+      (j.darslar.length ? j.darslar.map(d => `
+      <div class="karta karta--bosiladi dars" data-g="${d.id}">
+        <div class="dars__vaqt">${esc((d.smena || '—').split(/[–-]/)[0])}<small>${esc((d.smena || '').split(/[–-]/)[1] || '')}</small></div>
+        <div class="dars__ichi"><b>${esc(d.nom)}</b><p>${esc(d.kurs)} · ${esc(d.filial)}${d.ustoz ? ' · ' + esc(d.ustoz) : ''}${d.xona ? ' · ' + esc(d.xona) : ''}</p><p>${d.oquvchilar ?? 0} o'quvchi</p></div>
+        <span class="belgi ${d.toldirilgan ? 'belgi--ok' : 'belgi--yoq'}">${d.toldirilgan ? '✓ Yozilgan' : (j.sana <= bugun ? 'Yozilmagan' : 'Kutilmoqda')}</span>
+      </div>`).join('') : `<div class="bosh-xabar"><b>🗓</b>Bu kunda dars yo'q</div>`);
+    r.querySelectorAll('[data-g]').forEach(k => k.onclick = () => kir(() => jurnalEkrani(+k.dataset.g, H.sana)));
+  } catch (e) { const r = $('#royxat'); if (r) r.innerHTML = `<div class="bosh-xabar"><b>⚠️</b>${esc(e.message)}</div>`; }
+}
+
+// ---------------- 2. Guruh jurnali ----------------
+async function jurnalEkrani(gid, sana) {
+  yuklanmoqda(4);
+  let j;
+  try { j = await api(`jurnal/${gid}?sana=${sana}`); } catch (e) { return xato(e); }
+  const g = j.guruh, kelajak = j.sana > bugun;
+  const qat = j.qatorlar.map(q => ({...q}));
+  ekran.innerHTML = `
+    <div class="karta bosh-blok"><h2>${esc(g.nom)}</h2><p>${esc(g.kurs)} · ${esc(g.filial)} · ${esc(g.smena || '')}${g.ustoz ? ' · ' + esc(g.ustoz) : ''}</p>
+      <div class="filtr" style="margin:10px 0 0"><input type="date" id="jSana" value="${j.sana}" max="${bugun}"></div>
+      <div class="filtr" style="margin:8px 0 0">${j.oxirgi_kunlar.map(k => `<button class="chip ${k === j.sana ? 'faol' : ''}" data-k="${k}">${chiroyli(k)}</button>`).join('')}</div>
+      ${!j.dars_kuni ? `<p style="margin-top:8px;color:var(--sariq)">⚠️ Jadval bo'yicha bu kunda dars yo'q</p>` : ''}
+      ${j.dars && j.dars.xodim ? `<p style="margin-top:6px">Yozgan: ${esc(j.dars.xodim)}</p>` : ''}
+    </div>
+    ${kelajak ? `<div class="bosh-xabar"><b>⏳</b>Kelajak sanasiga jurnal yozib bo'lmaydi</div>` : `
+    <div class="karta">
+      <label class="maydon"><span>Dars mavzusi</span><input id="jMavzu" maxlength="200" value="${esc(j.dars ? j.dars.mavzu : '')}" placeholder="Masalan: Writing Task 2 — opinion essay"></label>
+      <label class="maydon"><span>Uy vazifasi</span><textarea id="jUy" rows="2" maxlength="300" placeholder="Masalan: Cambridge 18, Test 2 Reading">${esc(j.dars ? j.dars.uy_vazifa : '')}</textarea></label>
+    </div>
+    <div class="qator-tugmalar"><button class="tugma tugma--ikkinchi" id="hammaKeldi">✓ Hammasi keldi</button></div>
+    <div class="karta" id="qatorlar">${qat.length ? qat.map((q, i) => `
+      <div class="oq-blok" data-i="${i}">
+        <div class="oq">
+          <div class="oq__ism">${i + 1}. ${esc(q.ism)}<small data-hol>${q.holat ? HOLAT[q.holat][1] : 'belgilanmagan'}</small></div>
+          <div class="holatlar">${Object.keys(HOLAT).map(h => `<button data-h="${h}" class="${q.holat === h ? 'on' : ''}" title="${HOLAT[h][1]}">${HOLAT[h][0]}</button>`).join('')}</div>
+          <select class="baho" title="Baho"><option value="">—</option>${[1,2,3,4,5,6,7,8,9,10].map(b => `<option ${q.baho === b ? 'selected' : ''}>${b}</option>`).join('')}</select>
+          <button class="izoh-tugma" title="Izoh">✎</button>
+        </div>
+        <input class="izoh-input ${q.izoh ? '' : 'yashirin'}" maxlength="200" placeholder="Izoh" value="${esc(q.izoh)}">
+      </div>`).join('') : `<div class="bosh-xabar"><b>👥</b>Guruhda faol o'quvchi yo'q</div>`}</div>
+    <button class="tugma" id="saqla">Saqlash</button>`}`;
+  $('#jSana').onchange = e => { if (e.target.value) jurnalAlmashtir(gid, e.target.value); };
+  ekran.querySelectorAll('[data-k]').forEach(b => b.onclick = () => jurnalAlmashtir(gid, b.dataset.k));
+  if (kelajak) return;
+
+  let ozgardi = false;
+  const belgila = (blok, h) => {
+    const i = +blok.dataset.i; qat[i].holat = qat[i].holat === h ? null : h; ozgardi = true;
+    blok.querySelectorAll('[data-h]').forEach(b => b.classList.toggle('on', b.dataset.h === qat[i].holat));
+    blok.querySelector('[data-hol]').textContent = qat[i].holat ? HOLAT[qat[i].holat][1] : 'belgilanmagan';
+    try { tg && tg.HapticFeedback.selectionChanged(); } catch (e) {}
+  };
+  ekran.querySelectorAll('.oq-blok').forEach(blok => {
+    const i = +blok.dataset.i;
+    blok.querySelectorAll('[data-h]').forEach(b => b.onclick = () => belgila(blok, b.dataset.h));
+    blok.querySelector('.baho').onchange = e => { qat[i].baho = e.target.value ? +e.target.value : null; ozgardi = true; };
+    const iz = blok.querySelector('.izoh-input');
+    blok.querySelector('.izoh-tugma').onclick = () => { iz.classList.toggle('yashirin'); iz.focus(); };
+    iz.oninput = () => { qat[i].izoh = iz.value; ozgardi = true; };
+  });
+  $('#hammaKeldi').onclick = () => ekran.querySelectorAll('.oq-blok').forEach(blok => { qat[+blok.dataset.i].holat = null; belgila(blok, 'keldi'); });
+  ['#jMavzu', '#jUy'].forEach(s => $(s).oninput = () => ozgardi = true);
+
+  const saqla = async () => {
+    const tugma = $('#saqla'); if (!tugma || tugma.disabled) return;
+    tugma.disabled = true; tugma.textContent = 'Saqlanmoqda…'; if (tg) tg.MainButton.showProgress();
+    try {
+      const r = await api('jurnal/' + gid, {method: 'POST', body: JSON.stringify({sana: j.sana, mavzu: $('#jMavzu').value, uy_vazifa: $('#jUy').value,
+        qatorlar: qat.map(q => ({id: q.id, holat: q.holat, baho: q.baho, izoh: q.izoh || ''}))})});
+      ozgardi = false; haptik('success'); toast(`✓ Saqlandi (${r.saqlandi} o'quvchi)`);
+    } catch (e) { haptik('error'); toast('⚠️ ' + e.message); }
+    tugma.disabled = false; tugma.textContent = 'Saqlash'; if (tg) tg.MainButton.hideProgress();
+  };
+  $('#saqla').onclick = saqla;
+  if (tg) { tg.MainButton.setText('Saqlash'); tg.MainButton.show(); tg.MainButton.offClick(H.mb); H.mb = saqla; tg.MainButton.onClick(saqla); }
+  jurnalEkrani.ozgardi = () => ozgardi;
+}
+function jurnalAlmashtir(gid, sana) { H.stek[H.stek.length - 1] = () => jurnalEkrani(gid, sana); jurnalEkrani(gid, sana); }
+
+// ---------------- 3. Direktor hisoboti ----------------
+function davrSana() {
+  const t = new Date(), d = new Date(t);
+  if (H.davr === 'bugun') return [iso(t), iso(t)];
+  if (H.davr === 'hafta') { d.setDate(t.getDate() - ((t.getDay() + 6) % 7)); return [iso(d), iso(t)]; }
+  if (H.davr === 'otgan') { const a = new Date(t.getFullYear(), t.getMonth() - 1, 1), b = new Date(t.getFullYear(), t.getMonth(), 0); return [iso(a), iso(b)]; }
+  return [iso(new Date(t.getFullYear(), t.getMonth(), 1)), iso(t)];
+}
+async function hisobotEkrani() {
+  const m = H.men;
+  const chiplar = [['bugun','Bugun'],['hafta','Bu hafta'],['oy','Bu oy'],['otgan',"O'tgan oy"]];
+  ekran.innerHTML = `<div class="filtr">${chiplar.map(([k, t]) => `<button class="chip ${H.davr === k ? 'faol' : ''}" data-davr="${k}">${t}</button>`).join('')}</div>
+    <div class="filtr"><select id="hFilial"><option value="">Barcha filiallar</option>${m.filiallar.map(f => `<option value="${f.id}" ${H.hFilial == f.id ? 'selected' : ''}>${esc(f.nom)}</option>`).join('')}</select></div>
+    <div id="hIchi"><div class="yuklanmoqda"></div><div class="yuklanmoqda"></div></div>`;
+  ekran.querySelectorAll('[data-davr]').forEach(b => b.onclick = () => { H.davr = b.dataset.davr; hisobotEkrani(); });
+  $('#hFilial').onchange = e => { H.hFilial = e.target.value; hisobotEkrani(); };
+  let j;
+  const [dan, gacha] = davrSana();
+  try { j = await api(`hisobot?dan=${dan}&gacha=${gacha}&filial=${H.hFilial}`); } catch (e) { return xato(e); }
+  const J = j.jami, D = j.davomat, el = $('#hIchi'); if (!el) return;
+  const qism = (n, c) => D.jami ? `<i style="width:${n * 100 / D.jami}%;background:${c}"></i>` : '';
+  el.innerHTML = `
+    <div class="bosh2">${chiroyli(j.dan)} — ${chiroyli(j.gacha)}</div>
+    <div class="kpi">
+      <div><b>${J.oquvchilar}</b><small>faol o'quvchi</small></div>
+      <div><b>${J.guruhlar}</b><small>guruh · ${J.filiallar} filial</small></div>
+      <div><b>${foizM(D.foiz)}</b><small>davomat</small></div>
+      <div><b>${foizM(J.jurnal)}</b><small>jurnal yozilgan (${J.yozilgan_darslar}/${J.rejadagi_darslar})</small></div>
+      <div><b style="font-size:17px">${som(J.tolandi)}</b><small>to'langan</small></div>
+      <div><b style="font-size:17px;color:${J.qarz ? 'var(--qizil)' : 'inherit'}">${som(J.qarz)}</b><small>qarzdorlik</small></div>
+    </div>
+    <div class="karta"><b>Davomat</b> <span style="color:var(--kul);font-size:13px">· ${D.jami} belgi</span>
+      <div class="chiziq-bar">${qism(D.keldi, 'var(--yashil)')}${qism(D.kechikdi, 'var(--sariq)')}${qism(D.sababli, 'var(--kok)')}${qism(D.kelmadi, 'var(--qizil)')}</div>
+      <div class="legend"><span style="--c:var(--yashil)">Keldi ${D.keldi}</span><span style="--c:var(--sariq)">Kechikdi ${D.kechikdi}</span><span style="--c:var(--kok)">Sababli ${D.sababli}</span><span style="--c:var(--qizil)">Kelmadi ${D.kelmadi}</span></div>
+    </div>
+    <div class="bosh2">Filiallar</div>
+    <div class="karta"><table><tr><th>Filial</th><th>Guruh</th><th>O'q.</th><th>Davomat</th><th>Jurnal</th></tr>
+      ${j.filiallar.map(f => `<tr data-bos data-f="${f.id}"><td><b>${esc(f.nom)}</b>${f.qarz ? `<br><small style="color:var(--qizil)">qarz ${som(f.qarz)}</small>` : ''}</td><td>${f.guruhlar}</td><td>${f.oquvchilar}</td><td>${foizM(f.davomat)}</td><td>${foizM(f.jurnal)}</td></tr>`).join('')}</table></div>
+    <div class="bosh2">Ustozlar</div>
+    <div class="karta"><table><tr><th>Ustoz</th><th>Guruh</th><th>Dars</th><th>Davomat</th><th>Jurnal</th></tr>
+      ${j.ustozlar.length ? j.ustozlar.map(u => `<tr data-bos data-u="${u.id}"><td><b>${esc(u.ism)}</b></td><td>${u.guruhlar}</td><td>${u.yozilgan}/${u.rejadagi}</td><td>${foizM(u.davomat)}</td><td>${foizM(u.jurnal)}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--kul)">Ma\'lumot yo\'q</td></tr>'}</table></div>
+    <div class="bosh2">Jurnali yozilmagan darslar</div>
+    ${j.yozilmagan.length ? j.yozilmagan.map(y => `<div class="karta karta--bosiladi dars" data-yg="${y.guruh_id}" data-ys="${y.sana}">
+        <div class="dars__vaqt">${chiroyli(y.sana).split(',')[0]}<small>${esc(y.smena || '')}</small></div>
+        <div class="dars__ichi"><b>${esc(y.guruh)}</b><p>${esc(y.filial)}${y.ustoz ? ' · ' + esc(y.ustoz) : ''}</p></div><span class="belgi belgi--yoq">Yozilmagan</span></div>`).join('')
+      : `<div class="karta" style="text-align:center;color:var(--yashil)">✓ Barcha darslar jurnalga yozilgan</div>`}`;
+  el.querySelectorAll('[data-f]').forEach(t => t.onclick = () => { H.filial = t.dataset.f; H.ustoz = ''; H.meniki = false; tabOch('jurnal'); });
+  el.querySelectorAll('[data-u]').forEach(t => t.onclick = () => { H.ustoz = t.dataset.u; H.filial = ''; H.meniki = false; tabOch('jurnal'); });
+  el.querySelectorAll('[data-yg]').forEach(k => k.onclick = () => kir(() => jurnalEkrani(+k.dataset.yg, k.dataset.ys)));
+}
+
+// ---------------- 4. Xodimlar (direktor) ----------------
+async function xodimlarEkrani() {
+  const m = H.men;
+  ekran.innerHTML = `<div class="filtr"><select id="xFilial"><option value="">Barcha filiallar</option>${m.filiallar.map(f => `<option value="${f.id}" ${H.filial == f.id ? 'selected' : ''}>${esc(f.nom)}</option>`).join('')}</select></div><div id="xIchi"><div class="yuklanmoqda"></div></div>`;
+  $('#xFilial').onchange = e => { H.filial = e.target.value; xodimlarEkrani(); };
+  let j; try { j = await api('xodimlar?filial=' + H.filial); } catch (e) { return xato(e); }
+  const el = $('#xIchi'); if (!el) return;
+  el.innerHTML = j.xodimlar.length ? j.xodimlar.map(x => `
+    <div class="karta"><div class="ism-qator"><div><b>${esc(x.ism)}</b><div style="font-size:12.5px;color:var(--kul)">${esc(x.rol)}${x.botda ? ' · botda' : ''}</div></div>
+      ${x.ustoz_id ? `<button class="chip" data-xu="${x.ustoz_id}">Darslari ›</button>` : ''}</div>
+      ${x.guruhlar.length ? `<div class="xodim-guruhlar">${x.guruhlar.map(g => `<button class="chip" data-xg="${g.id}">${esc(g.nom)} · ${esc(g.smena || '')} · ${esc(g.filial)}</button>`).join('')}</div>` : ''}
+    </div>`).join('') : `<div class="bosh-xabar"><b>👥</b>Xodim topilmadi</div>`;
+  el.querySelectorAll('[data-xg]').forEach(b => b.onclick = () => kir(() => jurnalEkrani(+b.dataset.xg, bugun)));
+  el.querySelectorAll('[data-xu]').forEach(b => b.onclick = () => { H.ustoz = b.dataset.xu; H.meniki = false; tabOch('jurnal'); });
+}
+
+// ---------------- 5. O'quvchi: mening jurnalim ----------------
+async function meningEkrani() {
+  yuklanmoqda(3);
+  let j; try { j = await api('mening'); } catch (e) { return xato(e); }
+  ekran.innerHTML = `<div class="kpi"><div><b>${foizM(j.foiz)}</b><small>davomat (oxirgi ${j.qatorlar.length} dars)</small></div><div><b>${esc(H.men.guruh || '—')}</b><small>${esc(H.men.smena || '')}</small></div></div>` +
+    (j.qatorlar.length ? j.qatorlar.map(q => `<div class="karta"><div class="ism-qator"><b>${chiroyli(q.sana)}</b><span class="belgi ${q.holat === 'kelmadi' ? 'belgi--yoq' : 'belgi--ok'}">${HOLAT[q.holat][1]}${q.baho ? ' · ' + q.baho : ''}</span></div>
+      ${q.mavzu ? `<p style="margin-top:6px">📘 ${esc(q.mavzu)}</p>` : ''}${q.uy_vazifa ? `<p style="color:var(--kul);font-size:13.5px">🏠 ${esc(q.uy_vazifa)}</p>` : ''}${q.izoh ? `<p style="color:var(--kul);font-size:13.5px">💬 ${esc(q.izoh)}</p>` : ''}</div>`).join('')
+      : `<div class="bosh-xabar"><b>📒</b>Hozircha jurnal yozuvlari yo'q</div>`);
+}
+
+// ---------------- start ----------------
+(async () => {
+  try { H.men = await api('men'); }
+  catch (e) { $('#tablar').innerHTML = ''; return xato(new Error(e.message + (tg && !tg.initData ? ' (Ilovani Telegram bot ichidan oching)' : ''))); }
+  const m = H.men;
+  $('#sarlavha').textContent = m.ism;
+  $('#rol').textContent = m.tur === 'oquvchi' ? "o'quvchi" : m.rol;
+  const tablar = m.tur === 'oquvchi' ? [['mening', 'Jurnalim']] : m.direktor ? [['jurnal', 'Jurnal'], ['hisobot', 'Hisobot'], ['xodimlar', 'Xodimlar']] : [['jurnal', 'Jurnal']];
+  $('#tablar').innerHTML = tablar.map(([k, t]) => `<button data-t="${k}">${t}</button>`).join('');
+  $('#tablar').querySelectorAll('button').forEach(b => b.onclick = () => tabOch(b.dataset.t));
+  const boshTab = new URLSearchParams(location.search).get('tab');
+  tabOch(tablar.some(t => t[0] === boshTab) ? boshTab : tablar[0][0]);
+})();
+})();
+</script>
+</body>
+</html>

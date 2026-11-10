@@ -3,7 +3,7 @@ import secrets
 from django import forms
 from django.contrib import admin, messages
 
-from .models import Ariza, Davomat, Filial, Guruh, Kurs, Natija, Oquvchi, Tolov, Ustoz
+from .models import Ariza, Dars, Davomat, Filial, Guruh, Kurs, Natija, Oquvchi, Tolov, Ustoz, Xodim
 
 
 @admin.register(Filial)
@@ -34,9 +34,81 @@ class OquvchiInline(admin.TabularInline):
 
 @admin.register(Guruh)
 class GuruhAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'kurs', 'filial', 'ustoz', 'vaqt', 'kunlar')
-    list_filter = ('filial', 'kurs', 'ustoz')
+    list_display = ('nom', 'kurs', 'filial', 'ustoz', 'smena', 'hafta_kunlari', 'faol')
+    list_filter = ('faol', 'filial', 'kurs', 'ustoz')
+    search_fields = ('nom',)
+    fieldsets = (
+        (None, {'fields': ('nom', 'kurs', 'filial', 'ustoz', 'faol')}),
+        ("Jadval (jurnal shu bo'yicha ishlaydi)", {'fields': ('boshlanish', 'tugash', 'hafta_kunlari', 'xona')}),
+        ("Saytda ko'rinadigan matn (ixtiyoriy)", {'fields': ('vaqt', 'kunlar'), 'classes': ('collapse',)}),
+    )
     inlines = [OquvchiInline]
+
+
+def _login_band(login, model, pk):
+    """Login o'quvchilar va xodimlar orasida yagona bo'lishi kerak (bot ikkalasini bir joyda tekshiradi)."""
+    for m in (Oquvchi, Xodim):
+        qs = m.objects.filter(login__iexact=login)
+        if m is model and pk:
+            qs = qs.exclude(pk=pk)
+        if qs.exists():
+            return True
+    return False
+
+
+class XodimForma(forms.ModelForm):
+    yangi_parol = forms.CharField(
+        label='Yangi parol', required=False, min_length=4,
+        widget=forms.PasswordInput(render_value=False),
+        help_text="Bo'sh qoldirsangiz: yangi xodimga avtomatik parol yaratiladi, mavjudiniki o'zgarmaydi.")
+
+    class Meta:
+        model = Xodim
+        fields = '__all__'
+
+    def clean_login(self):
+        login = self.cleaned_data['login'].strip()
+        if _login_band(login, Xodim, self.instance.pk):
+            raise forms.ValidationError("Bu login band (o'quvchi yoki xodimda bor).")
+        return login
+
+
+@admin.register(Xodim)
+class XodimAdmin(admin.ModelAdmin):
+    form = XodimForma
+    list_display = ('ism', 'login', 'direktor', 'ustoz', 'faol', 'botda')
+    list_filter = ('direktor', 'faol')
+    search_fields = ('ism', 'login', 'tel')
+    readonly_fields = ('telegram_id', 'telegram_username')
+    actions = ['parol_yangila', 'botdan_uzish']
+
+    @admin.display(boolean=True, description='Botga kirgan')
+    def botda(self, obj):
+        return obj.telegram_id is not None
+
+    def save_model(self, request, obj, form, change):
+        xom = form.cleaned_data.get('yangi_parol')
+        if not xom and not obj.parol:
+            xom = secrets.token_hex(3)
+        if xom:
+            obj.parol_qoy(xom)
+            messages.success(request, f'{obj.ism}: login «{obj.login}», parol «{xom}». Xodimga yetkazing.')
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description='Tanlanganlarga yangi parol yaratish')
+    def parol_yangila(self, request, queryset):
+        qatorlar = []
+        for o in queryset:
+            xom = secrets.token_hex(3)
+            o.parol_qoy(xom)
+            o.save(update_fields=['parol'])
+            qatorlar.append(f'{o.login}: {xom}')
+        messages.success(request, 'Yangi parollar — ' + '; '.join(qatorlar))
+
+    @admin.action(description='Telegram akkauntdan uzish')
+    def botdan_uzish(self, request, queryset):
+        n = queryset.update(telegram_id=None, telegram_username='')
+        messages.success(request, f'{n} ta xodim botdan uzildi.')
 
 
 class OquvchiForma(forms.ModelForm):
@@ -48,6 +120,12 @@ class OquvchiForma(forms.ModelForm):
     class Meta:
         model = Oquvchi
         fields = '__all__'
+
+    def clean_login(self):
+        login = self.cleaned_data['login'].strip()
+        if _login_band(login, Oquvchi, self.instance.pk):
+            raise forms.ValidationError("Bu login band (o'quvchi yoki xodimda bor).")
+        return login
 
 
 class TolovInline(admin.TabularInline):
@@ -109,9 +187,19 @@ class TolovAdmin(admin.ModelAdmin):
 
 @admin.register(Davomat)
 class DavomatAdmin(admin.ModelAdmin):
-    list_display = ('oquvchi', 'sana', 'keldi')
-    list_filter = ('keldi', 'sana', 'oquvchi__guruh')
+    list_display = ('oquvchi', 'guruh', 'sana', 'holat', 'baho', 'izoh', 'belgiladi')
+    list_filter = ('holat', 'sana', 'guruh__filial', 'guruh')
+    search_fields = ('oquvchi__ism', 'oquvchi__login')
     autocomplete_fields = ('oquvchi',)
+    date_hierarchy = 'sana'
+
+
+@admin.register(Dars)
+class DarsAdmin(admin.ModelAdmin):
+    list_display = ('guruh', 'sana', 'mavzu', 'uy_vazifa', 'xodim')
+    list_filter = ('guruh__filial', 'guruh')
+    search_fields = ('guruh__nom', 'mavzu')
+    date_hierarchy = 'sana'
 
 
 @admin.register(Natija)

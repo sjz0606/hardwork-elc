@@ -26,6 +26,9 @@ CORS_ORIGINS = _royxat('CORS_ORIGINS')
 BOT_FAQAT_LOGIN = os.getenv('BOT_FAQAT_LOGIN', '1') == '1'
 SITE_URL = os.getenv('SITE_URL', '')                # https://hardwork.osonhujjat.uz
 WEBHOOK_SECRET = os.getenv('WEBHOOK_SECRET', '')    # Telegram webhook maxfiy kaliti
+# Telegram Mini App (jurnal). Telegram faqat haqiqiy HTTPS manzilni ochadi.
+MINIAPP_URL = os.getenv('MINIAPP_URL', (SITE_URL.rstrip('/') + '/app/') if SITE_URL else '')
+MINIAPP_SSL_TEKSHIR = os.getenv('MINIAPP_SSL_TEKSHIR', '1') == '1'
 
 INSTALLED_APPS = [
     'django.contrib.admin',

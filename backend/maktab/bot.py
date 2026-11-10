@@ -12,7 +12,7 @@ from django.db import close_old_connections
 from django.utils import timezone
 from telebot import types
 
-from maktab.models import Ariza, Filial, Kurs, Oquvchi
+from maktab.models import Ariza, Filial, Kurs, Oquvchi, Xodim
 from maktab.xabar import ariza_xabari
 
 log = logging.getLogger('hardwork.bot')
@@ -89,12 +89,60 @@ LOGIN_KERAK = ("🔐 Botdan foydalanish uchun markaz bergan <b>login va parol</b
                "Login yo'q bo'lsa — filial administratoriga murojaat qiling.")
 
 
+JURNAL = '📒 Jurnal'
+JURNALIM = '📒 Jurnalim'
+HISOBOT = '📊 Hisobot'
+
+
+def _ssl_ishlaydimi(host):
+    """Mini App faqat haqiqiy HTTPS'da ochiladi — sertifikat to'g'riligini tekshiradi (10 daqiqa keshda)."""
+    kalit = f'hwbot:ssl:{host}'
+    natija = cache.get(kalit)
+    if natija is None:
+        import socket
+        import ssl
+        try:
+            with socket.create_connection((host, 443), timeout=5) as s:
+                with ssl.create_default_context().wrap_socket(s, server_hostname=host):
+                    natija = True
+        except Exception:
+            natija = False
+        cache.set(kalit, natija, 600)
+    return natija
+
+
+def miniapp_url(tab=''):
+    """Mini ilova manzili; HTTPS ishlamasa None (unda tugma oddiy matn bo'ladi)."""
+    url = settings.MINIAPP_URL
+    if not url.startswith('https://'):
+        return None
+    if settings.MINIAPP_SSL_TEKSHIR and not _ssl_ishlaydimi(url.split('/')[2]):
+        return None
+    return url + (f'?tab={tab}' if tab else '')
+
+
+def _app_tugma(matn, tab=''):
+    url = miniapp_url(tab)
+    return types.KeyboardButton(matn, web_app=types.WebAppInfo(url)) if url else types.KeyboardButton(matn)
+
+
 def oquvchi_klaviatura():
     k = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    k.row(_app_tugma(JURNALIM))
     k.row(PROFIL, JADVAL)
     k.row(NATIJALAR, DAVOMAT)
     k.row(TOLOVLAR, FILIALLAR)
     k.row(CHIQISH)
+    return k
+
+
+def xodim_klaviatura(x):
+    k = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    if x.direktor:
+        k.row(_app_tugma(JURNAL), _app_tugma(HISOBOT, 'hisobot'))
+    else:
+        k.row(_app_tugma(JURNAL))
+    k.row(FILIALLAR, CHIQISH)
     return k
 
 
@@ -111,8 +159,29 @@ def joriy_oquvchi(chat_id):
         .filter(telegram_id=chat_id, faol=True).first()
 
 
+def joriy_xodim(chat_id):
+    return Xodim.objects.select_related('ustoz').filter(telegram_id=chat_id, faol=True).first()
+
+
 def asosiy_menyu(chat_id):
+    x = joriy_xodim(chat_id)
+    if x:
+        return xodim_klaviatura(x)
     return oquvchi_klaviatura() if joriy_oquvchi(chat_id) else mehmon_klaviatura()
+
+
+def kirgan(chat_id):
+    return joriy_xodim(chat_id) is not None or joriy_oquvchi(chat_id) is not None
+
+
+def menyu_tugmasi(bot, chat_id, yoq=True):
+    """Chat pastidagi «Menu» tugmasini mini ilovaga ulaydi (yoki odatiy holatga qaytaradi)."""
+    url = miniapp_url() if yoq else None
+    try:
+        bot.set_chat_menu_button(chat_id, types.MenuButtonWebApp('📒 Jurnal', types.WebAppInfo(url))
+                                 if url else types.MenuButtonCommands())
+    except Exception as ex:
+        log.warning('Menu tugmasi o\'rnatilmadi: %s', ex)
 
 
 BUYRUQLAR = [
@@ -155,7 +224,7 @@ def royxatdan_otkaz(bot):
 
     def mehmonga_yopiq(m):
         """Faqat-login rejimida kirmagan foydalanuvchini to'xtatadi."""
-        if settings.BOT_FAQAT_LOGIN and not joriy_oquvchi(m.chat.id):
+        if settings.BOT_FAQAT_LOGIN and not kirgan(m.chat.id):
             bot.send_message(m.chat.id, LOGIN_KERAK, reply_markup=mehmon_klaviatura())
             return True
         return False
@@ -165,8 +234,13 @@ def royxatdan_otkaz(bot):
     @db
     def start(m):
         holat.pop(m.chat.id, None)
-        o = joriy_oquvchi(m.chat.id)
-        if o:
+        x = joriy_xodim(m.chat.id)
+        o = None if x else joriy_oquvchi(m.chat.id)
+        if x:
+            matn = (f'Salom, <b>{e(x.ism)}</b>! 👋\n' + ('Direktor' if x.direktor else 'Ustoz') + ' kabineti.\n\n'
+                    + ('📒 <b>Jurnal</b> tugmasini bosing.' if miniapp_url() else
+                       '📒 Jurnal mini ilovasi sayt SSL sertifikati tayyor bo\'lgach ochiladi.'))
+        elif o:
             matn = f'Salom, <b>{e(o.ism)}</b>! 👋\nHardWork o\'quvchi kabinetiga xush kelibsiz.'
         elif settings.BOT_FAQAT_LOGIN:
             bot.send_message(m.chat.id, 'Assalomu alaykum! 👋\n<b>HardWork English Learning Centre</b> boti.\n\n'
@@ -222,8 +296,8 @@ def royxatdan_otkaz(bot):
     @bot.message_handler(func=lambda m: shaxsiy(m) and m.text == KIRISH)
     @db
     def kirish(m):
-        if joriy_oquvchi(m.chat.id):
-            bot.send_message(m.chat.id, 'Siz allaqachon kirgansiz.', reply_markup=oquvchi_klaviatura())
+        if kirgan(m.chat.id):
+            bot.send_message(m.chat.id, 'Siz allaqachon kirgansiz.', reply_markup=asosiy_menyu(m.chat.id))
             return
         soni, blok = urinishlar.get(m.chat.id, (0, 0))
         if blok > time.time():
@@ -249,7 +323,9 @@ def royxatdan_otkaz(bot):
         except Exception:
             pass
         login = holat.pop(m.chat.id, {}).get('login', '')
-        o = Oquvchi.objects.filter(login__iexact=login, faol=True).first()
+        # avval xodim (ustoz/direktor), keyin o'quvchi — login ikkalasida yagona (admin tekshiradi)
+        o = (Xodim.objects.filter(login__iexact=login, faol=True).first()
+             or Oquvchi.objects.filter(login__iexact=login, faol=True).first())
         if not o or not o.parol_tekshir(m.text):
             soni, _ = urinishlar.get(m.chat.id, (0, 0))
             soni += 1
@@ -266,21 +342,51 @@ def royxatdan_otkaz(bot):
                              reply_markup=mehmon_klaviatura())
             return
         urinishlar.pop(m.chat.id, None)
-        # Shu Telegramga avval boshqa o'quvchi ulangan bo'lsa — uzamiz
-        Oquvchi.objects.filter(telegram_id=m.chat.id).exclude(pk=o.pk).update(telegram_id=None, telegram_username='')
+        # Shu Telegramga avval boshqa akkaunt (o'quvchi yoki xodim) ulangan bo'lsa — uzamiz
+        for model in (Oquvchi, Xodim):
+            qs = model.objects.filter(telegram_id=m.chat.id)
+            if isinstance(o, model):
+                qs = qs.exclude(pk=o.pk)
+            qs.update(telegram_id=None, telegram_username='')
         o.telegram_id = m.chat.id
         o.telegram_username = m.from_user.username or ''
         o.save(update_fields=['telegram_id', 'telegram_username'])
-        bot.send_message(m.chat.id, f'✅ Xush kelibsiz, <b>{e(o.ism)}</b>!', reply_markup=oquvchi_klaviatura())
+        if isinstance(o, Xodim):
+            matn = (f'✅ Xush kelibsiz, <b>{e(o.ism)}</b>! (' + ('direktor' if o.direktor else 'ustoz') + ')\n'
+                    + ('📒 <b>Jurnal</b> tugmasi orqali mini ilovani oching.' if miniapp_url() else
+                       '📒 Jurnal mini ilovasi sayt SSL sertifikati tayyor bo\'lgach ochiladi.'))
+            bot.send_message(m.chat.id, matn, reply_markup=xodim_klaviatura(o))
+        else:
+            bot.send_message(m.chat.id, f'✅ Xush kelibsiz, <b>{e(o.ism)}</b>!', reply_markup=oquvchi_klaviatura())
+        menyu_tugmasi(bot, m.chat.id)
 
     @bot.message_handler(commands=['chiqish'], func=shaxsiy)
     @bot.message_handler(func=lambda m: shaxsiy(m) and m.text == CHIQISH)
     @db
     def chiqish(m):
-        n = Oquvchi.objects.filter(telegram_id=m.chat.id).update(telegram_id=None, telegram_username='')
+        n = sum(model.objects.filter(telegram_id=m.chat.id).update(telegram_id=None, telegram_username='')
+                for model in (Oquvchi, Xodim))
         holat.pop(m.chat.id, None)
         bot.send_message(m.chat.id, 'Akkauntdan chiqdingiz.' if n else 'Siz tizimga kirmagansiz.',
                          reply_markup=mehmon_klaviatura())
+        if n:
+            menyu_tugmasi(bot, m.chat.id, yoq=False)
+
+    @bot.message_handler(func=lambda m: shaxsiy(m) and m.text in (JURNAL, JURNALIM, HISOBOT))
+    @db
+    def jurnal_matn(m):
+        """Mini ilova tugmasi oddiy matn bo'lib kelsa (HTTPS hali yo'q)."""
+        if mehmonga_yopiq(m):
+            return
+        url = miniapp_url()
+        if url:
+            k = types.InlineKeyboardMarkup()
+            k.add(types.InlineKeyboardButton('📒 Jurnalni ochish', web_app=types.WebAppInfo(url)))
+            bot.send_message(m.chat.id, 'Mini ilova:', reply_markup=k)
+            bot.send_message(m.chat.id, 'Menyu yangilandi.', reply_markup=asosiy_menyu(m.chat.id))
+        else:
+            bot.send_message(m.chat.id, "📒 Jurnal mini ilovasi sayt SSL (HTTPS) sertifikati tayyor bo'lgach ochiladi. "
+                                        "Hozircha jurnalni admin paneldan yuritish mumkin.")
 
     # ---------------- O'quvchi kabineti ----------------
     def oquvchi_kerak(f):
